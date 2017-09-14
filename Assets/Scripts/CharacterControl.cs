@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CharacterConcroller : MonoBehaviour {
+public class CharacterControl : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -12,6 +12,6 @@ public class CharacterConcroller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+	 	
 	}
 }
