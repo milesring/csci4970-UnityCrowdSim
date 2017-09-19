@@ -1,0 +1,9 @@
+Assets/MaleCharacterPack/Humanoids/*
+Temp/*
+Library/*
+obj*
+.vs*
+*.sln
+ProjectSettings/*
+Assembly-CSharp.csproj
+

@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
 
-public class Navgation : MonoBehaviour {
+public class Navigation : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
