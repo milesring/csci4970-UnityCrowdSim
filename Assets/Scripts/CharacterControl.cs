@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+// TODO I am unsure if this class is used anywhere
 public class CharacterControl : MonoBehaviour {
 
 	// Use this for initialization

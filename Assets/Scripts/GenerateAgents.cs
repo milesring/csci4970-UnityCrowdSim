@@ -16,9 +16,11 @@ public class GenerateAgents : MonoBehaviour {
         if (Time.time > lastAgentSecond + 1)
         {
             lastAgentSecond++;
-            Instantiate(AgentToGenerate, 
-                this.transform.position + new Vector3(Random.value * 2 - 1, 0, Random.value * 2 - 1) * 10, 
-                Quaternion.identity);
+            Instantiate(AgentToGenerate,
+                // Spawns AgentToGenerate in random position near the AgentGenerator
+                //this.transform.position + new Vector3(Random.value * 2 - 1, 0, Random.value * 2 - 1) * 10, Quaternion.identity);
+                // Spawns AgentToGenerate in fixed position near the AgentGenerator
+                this.transform.position, Quaternion.identity);
         }
 	}
 }

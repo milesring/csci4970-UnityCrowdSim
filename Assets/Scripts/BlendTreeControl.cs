@@ -16,14 +16,15 @@ public class BlendTreeControl : MonoBehaviour {
         //NavMeshAgent.updateRotation = true;
 
         //TODO figure out what this does or delete it
-        /* 
-        angle = Vector3.Angle(NavMeshAgent.velocity.normalized, this.transform.forward);
+        /*
+        float angle = Vector3.Angle(NavMeshAgent.velocity.normalized, this.transform.forward);
         if (NavMeshAgent.velocity.normalized.x < this.transform.forward.x)
         {
             angle *= -1;
         }
         angle = (angle + 180.0f) % 360.0f;
-        angle = Mathf.Deg2Rad * angle;*/
+        angle = Mathf.Deg2Rad * angle;
+        */
 
         var Animator = this.GetComponent<Animator>();
         Animator.SetFloat("Speed", NavMeshAgent.desiredVelocity.magnitude);
