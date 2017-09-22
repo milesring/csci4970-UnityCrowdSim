@@ -2,14 +2,17 @@
 using UnityEngine.AI;
 
 public class Navigation : MonoBehaviour {
+	public bool useTarget;
     public Transform target;
-	public float destinationPadding;
-	private float tripTimer;
 
+	public float destinationPadding;
+
+	private float tripTimer;
 	private bool distracted;
 	private float distractionTimer;
 	public float distractionTime;
 
+	public float stoppingValue;
 
 	private Vector3 entrance;
 	private Vector3 lastDestination;
@@ -21,15 +24,23 @@ public class Navigation : MonoBehaviour {
 		tripTimer = 0.0f;
 		distractionTimer = 0.0f;
 
+		//assign fake "interest" value that must be exceeded by a POI to distract agent
+		stoppingValue = Random.Range(0.4f, 1.0f);
+
 
         var NavMeshAgent = this.GetComponent<NavMeshAgent>();
-        if (target != null) {
-            //Debug.Log(message: "Transform found: " + target.position);
-            NavMeshAgent.destination = target.position;
-        } else {
-            // Use default location
-            NavMeshAgent.destination = new Vector3(100, 0, 8.4f);
-        }
+
+		if (useTarget) {
+			if (target != null) {
+				//Debug.Log(message: "Transform found: " + target.position);
+				NavMeshAgent.destination = target.position;
+			} else {
+				// Use default location
+				NavMeshAgent.destination = new Vector3 (100, 0, 8.4f);
+			}
+		} else {
+			NavMeshAgent.destination = new Vector3 (123.19f, 0, -13.56f);
+		}
 
 		speed = NavMeshAgent.speed;
 	}
@@ -54,7 +65,7 @@ public class Navigation : MonoBehaviour {
 			}
 		}
 		//Stop moving if destination reached
-		if ((NavMeshAgent.destination- this.transform.position).magnitude < destinationPadding) {
+		if ((NavMeshAgent.destination - this.transform.position).magnitude < destinationPadding) {
 			NavMeshAgent.speed = 0.0f;
 		}
 	}
