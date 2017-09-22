@@ -54,7 +54,7 @@ public class Navigation : MonoBehaviour {
 			}
 		}
 		//Stop moving if destination reached
-		if (NavMeshAgent.destination.magnitude - this.transform.position.magnitude < destinationPadding) {
+		if ((NavMeshAgent.destination- this.transform.position).magnitude < destinationPadding) {
 			NavMeshAgent.speed = 0.0f;
 		}
 	}
