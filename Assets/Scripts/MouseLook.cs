@@ -18,6 +18,7 @@ public class MouseLook : MonoBehaviour {
 	public float maximumVert = 90.0f;
 
 	public float speed;
+	private float tempSpeed;
 
 	private float rotationX = 0;
 
@@ -64,12 +65,18 @@ public class MouseLook : MonoBehaviour {
 			rotationEnabled = false;
 		}
 
+		if (Input.GetKey (KeyCode.LeftShift)) {
+			tempSpeed = speed * 5;
+		} else {
+			tempSpeed = speed;
+		}
+
 		float deltaX = Input.GetAxis ("Horizontal");
 		float deltaZ = Input.GetAxis ("Vertical");
 
 		Vector3 movement = new Vector3 (deltaX, 0, deltaZ);
-		movement = Vector3.ClampMagnitude (movement, speed);
-		movement *= speed;
+		movement = Vector3.ClampMagnitude (movement, tempSpeed);
+		movement *= tempSpeed;
 		movement *= Time.deltaTime;
 
 		camera.transform.Translate(movement);

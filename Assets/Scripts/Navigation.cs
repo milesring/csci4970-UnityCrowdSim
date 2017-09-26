@@ -2,7 +2,9 @@
 using UnityEngine.AI;
 
 public class Navigation : MonoBehaviour {
+	public bool useTarget;
     public Transform target;
+
     public GameObject[] targets;
     public float destinationPadding;
     public Vector3 destinationPaddingVector;
@@ -12,6 +14,7 @@ public class Navigation : MonoBehaviour {
 	private float distractionTimer;
 	public float distractionTime;
 
+	public float stoppingValue;
 
 	private Vector3 entrance;
 	private Vector3 lastDestination;
@@ -23,19 +26,23 @@ public class Navigation : MonoBehaviour {
 		tripTimer = 0.0f;
 		distractionTimer = 0.0f;
 
-        destinationPaddingVector = new Vector3(destinationPadding, 0, destinationPadding);
+		//assign fake "interest" value that must be exceeded by a POI to distract agent
+		stoppingValue = Random.Range(0.4f, 1.0f);
 
-        // TODO This is a test statement- remove
-        targets = GameObject.FindGameObjectsWithTag("Target 1");
-
+        // targets = GameObject.FindGameObjectsWithTag("Target 1");
         var NavMeshAgent = this.GetComponent<NavMeshAgent>();
-        if (targets[0] != null) {
-            Debug.Log(message: "Transform found: " + targets[0].transform.position);
-            NavMeshAgent.destination = targets[0].transform.position;
-        } else {
-            // Use default location
-            NavMeshAgent.destination = new Vector3(100, 0, 8.4f);
-        }
+
+		if (useTarget) {
+			if (target != null) {
+				//Debug.Log(message: "Transform found: " + target.position);
+				NavMeshAgent.destination = target.position;
+			} else {
+				// Use default location
+				NavMeshAgent.destination = new Vector3 (100, 0, 8.4f);
+			}
+		} else {
+			NavMeshAgent.destination = new Vector3 (123.19f, 0, -13.56f);
+		}
 
         speed = NavMeshAgent.speed;
 	}
@@ -59,8 +66,6 @@ public class Navigation : MonoBehaviour {
 				//Debug.Log ("Agent no longer distracted");
 			}
 		}
-
-        //NavMeshAgent.destination.
 
         //Stop moving if destination reached
         if ((NavMeshAgent.destination - transform.position).magnitude < destinationPadding) {
