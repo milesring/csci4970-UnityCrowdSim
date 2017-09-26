@@ -3,7 +3,9 @@ using UnityEngine.AI;
 
 public class Navigation : MonoBehaviour {
     public Transform target;
-	public float destinationPadding;
+    public GameObject[] targets;
+    public float destinationPadding;
+    public Vector3 destinationPaddingVector;
 	private float tripTimer;
 
 	private bool distracted;
@@ -21,17 +23,21 @@ public class Navigation : MonoBehaviour {
 		tripTimer = 0.0f;
 		distractionTimer = 0.0f;
 
+        destinationPaddingVector = new Vector3(destinationPadding, 0, destinationPadding);
+
+        // TODO This is a test statement- remove
+        targets = GameObject.FindGameObjectsWithTag("Target 1");
 
         var NavMeshAgent = this.GetComponent<NavMeshAgent>();
-        if (target != null) {
-            //Debug.Log(message: "Transform found: " + target.position);
-            NavMeshAgent.destination = target.position;
+        if (targets[0] != null) {
+            Debug.Log(message: "Transform found: " + targets[0].transform.position);
+            NavMeshAgent.destination = targets[0].transform.position;
         } else {
             // Use default location
             NavMeshAgent.destination = new Vector3(100, 0, 8.4f);
         }
 
-		speed = NavMeshAgent.speed;
+        speed = NavMeshAgent.speed;
 	}
 	
 	// Update is called once per frame
@@ -53,8 +59,12 @@ public class Navigation : MonoBehaviour {
 				//Debug.Log ("Agent no longer distracted");
 			}
 		}
-		//Stop moving if destination reached
-		if (NavMeshAgent.destination.magnitude - this.transform.position.magnitude < destinationPadding) {
+
+        //NavMeshAgent.destination.
+
+        //Stop moving if destination reached
+        if ((NavMeshAgent.destination - transform.position).magnitude < destinationPadding) {
+            Debug.Log("Stopping agent");
 			NavMeshAgent.speed = 0.0f;
 		}
 	}
