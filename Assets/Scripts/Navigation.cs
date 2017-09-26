@@ -14,21 +14,25 @@ public class Navigation : MonoBehaviour {
 
 	public float stoppingValue;
 
-	private Vector3 entrance;
+	private Vector3 startPos;
 	private Vector3 lastDestination;
 	private float speed;
+	private GameObject[] entrances;
+	private GameObject[] exits;
+	private bool inVenue;
 
 	// Use this for initialization
 	void Start () {
+		inVenue = false;
 		distracted = false;
 		tripTimer = 0.0f;
 		distractionTimer = 0.0f;
+		startPos = this.transform.position;
 
 		//assign fake "interest" value that must be exceeded by a POI to distract agent
 		stoppingValue = Random.Range(0.4f, 1.0f);
 
-
-        var NavMeshAgent = this.GetComponent<NavMeshAgent>();
+		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
 
 		if (useTarget) {
 			if (target != null) {
@@ -43,6 +47,10 @@ public class Navigation : MonoBehaviour {
 		}
 
 		speed = NavMeshAgent.speed;
+
+
+		findEntrances ();
+		findNearestDestination ();
 	}
 	
 	// Update is called once per frame
@@ -66,7 +74,26 @@ public class Navigation : MonoBehaviour {
 		}
 		//Stop moving if destination reached
 		if ((NavMeshAgent.destination - this.transform.position).magnitude < destinationPadding) {
-			NavMeshAgent.speed = 0.0f;
+			if (!inVenue) {
+				inVenue = true;
+				//find nearest destination in the building, at this point a goal should be sought out
+				//aka dancefloor, bar, seating, etc.
+				Debug.Log ("Agent inside venue");
+
+
+				//temp code
+				NavMeshAgent.destination = startPos;
+
+			//the Y value in destination becomes distorted, so it is ignored for now
+			} else if (NavMeshAgent.destination.x == startPos.x && NavMeshAgent.destination.z == startPos.z) {
+				Debug.Log ("Agent returned to start pos, despawning");
+				Destroy (this.gameObject);
+			} else {
+				//inside at goal destination
+				NavMeshAgent.speed = 0.0f;
+				//Debug.Log ("Agent destination: " + NavMeshAgent.destination.x + ", " + NavMeshAgent.destination.y + ", " + NavMeshAgent.destination.z);
+				//Debug.Log ("Agent start pos: " + startPos.x + ", " + startPos.y + ", " + startPos.z);
+			}
 		}
 	}
 
@@ -78,5 +105,41 @@ public class Navigation : MonoBehaviour {
 		//save last destination
 		lastDestination = NavMeshAgent.destination;
 		//Debug.Log ("Agent distracted");
+	}
+
+	void findEntrances(){
+		//Finds all entrances in the scene
+		entrances = GameObject.FindGameObjectsWithTag ("Entrance");
+		if (entrances != null) {
+			for (int i = 0; i < entrances.Length; ++i) {
+				GameObject temp = entrances [i];
+				Debug.Log ("Entrance found at: " + temp.transform.position.x + ", " + temp.transform.position.y + ", " + temp.transform.position.z);
+			}
+		} else {
+			Debug.Log ("No entrances found");
+		}
+	}
+
+	void findNearestDestination(){
+		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
+
+
+		//find nearest entrance
+		if (!inVenue) {
+			GameObject nearest = null;
+			for(int i=0;i<entrances.Length;++i){
+				if (nearest == null) {
+					nearest = entrances [i];
+				}
+
+				if ((entrances [i].transform.position - this.transform.position).magnitude < (nearest.transform.position - this.transform.position).magnitude) {
+					nearest = entrances [i];
+				}
+			}
+			Debug.Log ("Nearest entrance found at: " + nearest.transform.position.x + ", " + nearest.transform.position.y + ", " + nearest.transform.position.z);
+			NavMeshAgent.destination = nearest.transform.position;
+		}
+
+
 	}
 }

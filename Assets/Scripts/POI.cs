@@ -25,14 +25,14 @@ public class POI : MonoBehaviour {
 			Vector3 targetDir = this.transform.position - other.gameObject.transform.position;
 			float step = turnSpeed * Time.deltaTime;
 			Vector3 newDir = Vector3.RotateTowards(other.gameObject.transform.forward, targetDir, step, 0.0F);
-			Debug.DrawRay(other.gameObject.transform.position, newDir, Color.red);
+			//Debug.DrawRay(other.gameObject.transform.position, newDir, Color.red);
 			transform.rotation = Quaternion.LookRotation(newDir);
 
 
 			//assign new "destination"
 			NavMeshAgent.destination = this.transform.position;
 		} else if (other.gameObject.tag == "Agent") {
-			Debug.Log ("Agent is aware, but not interested " + other.gameObject.GetComponent<Navigation> ().stoppingValue + " vs " + interestLevel);
+			//Debug.Log ("Agent is aware, but not interested " + other.gameObject.GetComponent<Navigation> ().stoppingValue + " vs " + interestLevel);
 		}
 	}
 }

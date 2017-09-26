@@ -1,12 +1,11 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/MouseLook.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/AgentCollider.cs">
     <Files>
-      <File FileName="Assets/Scripts/MouseLook.cs" Line="76" Column="3" />
+      <File FileName="Assets/Scripts/MouseLook.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/POI.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Navigation.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/AgentCollider.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Door.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Navigation.cs" Line="113" Column="62" />
+      <File FileName="Assets/Scripts/AgentCollider.cs" Line="12" Column="36" />
       <File FileName="Assets/Scripts/GenerateAgents.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/CharacterControl.cs" Line="1" Column="1" />
     </Files>
