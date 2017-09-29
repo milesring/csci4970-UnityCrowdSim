@@ -2,6 +2,7 @@
 using UnityEngine.AI;
 
 public class Navigation : MonoBehaviour {
+	private LocationManager locationManager;
 	public bool useTarget;
     public Transform target;
 
@@ -23,6 +24,7 @@ public class Navigation : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		locationManager = GameObject.Find ("LocationManager").GetComponent<LocationManager> ();
 		inVenue = false;
 		distracted = false;
 		tripTimer = 0.0f;
@@ -43,14 +45,14 @@ public class Navigation : MonoBehaviour {
 				NavMeshAgent.destination = new Vector3 (100, 0, 8.4f);
 			}
 		} else {
-			NavMeshAgent.destination = new Vector3 (123.19f, 0, -13.56f);
+			NavMeshAgent.destination = findNearestDestination ();
 		}
 
 		speed = NavMeshAgent.speed;
 
 
-		findEntrances ();
-		findNearestDestination ();
+		//findEntrances ();
+
 	}
 	
 	// Update is called once per frame
@@ -81,7 +83,14 @@ public class Navigation : MonoBehaviour {
 				Debug.Log ("Agent inside venue");
 
 
-				//temp code
+				//find next destination (for now, exit)
+				NavMeshAgent.destination = findNearestDestination();
+
+			
+			} else if(inVenue){
+				//this will be the spot for finding goals or traversing through goals in venue
+
+				//for now, return to start
 				NavMeshAgent.destination = startPos;
 
 			//the Y value in destination becomes distorted, so it is ignored for now
@@ -107,39 +116,29 @@ public class Navigation : MonoBehaviour {
 		//Debug.Log ("Agent distracted");
 	}
 
-	void findEntrances(){
-		//Finds all entrances in the scene
-		entrances = GameObject.FindGameObjectsWithTag ("Entrance");
-		if (entrances != null) {
-			for (int i = 0; i < entrances.Length; ++i) {
-				GameObject temp = entrances [i];
-				Debug.Log ("Entrance found at: " + temp.transform.position.x + ", " + temp.transform.position.y + ", " + temp.transform.position.z);
-			}
-		} else {
-			Debug.Log ("No entrances found");
-		}
-	}
-
-	void findNearestDestination(){
-		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
-
-
-		//find nearest entrance
+	Vector3 findNearestDestination(){
+		GameObject[] locations;
 		if (!inVenue) {
-			GameObject nearest = null;
-			for(int i=0;i<entrances.Length;++i){
-				if (nearest == null) {
-					nearest = entrances [i];
-				}
-
-				if ((entrances [i].transform.position - this.transform.position).magnitude < (nearest.transform.position - this.transform.position).magnitude) {
-					nearest = entrances [i];
-				}
-			}
-			Debug.Log ("Nearest entrance found at: " + nearest.transform.position.x + ", " + nearest.transform.position.y + ", " + nearest.transform.position.z);
-			NavMeshAgent.destination = nearest.transform.position;
+			locations = locationManager.getLocations ("Entrance");
+			//once goals are in place this will be the check for event over(or something like that) && inVenue
+		} else {
+			//temp code for finding exit
+			locations = locationManager.getLocations("Exit");
 		}
 
+		//find nearest location
+		GameObject nearest = null;
+		for(int i=0;i<locations.Length;++i){
+			if (nearest == null) {
+				nearest = locations [i];
+			}
 
+			if ((locations [i].transform.position - this.transform.position).magnitude < (nearest.transform.position - this.transform.position).magnitude) {
+					nearest = locations [i];
+			}
+		}
+
+		Debug.Log ("Nearest location found at: " + nearest.transform.position.x + ", " + nearest.transform.position.y + ", " + nearest.transform.position.z);
+		return nearest.transform.position;
 	}
 }
