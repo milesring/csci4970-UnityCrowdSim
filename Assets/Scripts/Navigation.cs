@@ -80,7 +80,7 @@ public class Navigation : MonoBehaviour {
 				inVenue = true;
 				//find nearest destination in the building, at this point a goal should be sought out
 				//aka dancefloor, bar, seating, etc.
-				Debug.Log ("Agent inside venue");
+				//Debug.Log ("Agent inside venue");
 
 
 				//find next destination (for now, exit)
@@ -91,7 +91,8 @@ public class Navigation : MonoBehaviour {
 				//this will be the spot for finding goals or traversing through goals in venue
 
 				//for now, return to start
-				NavMeshAgent.destination = startPos;
+				//NavMeshAgent.destination = startPos;
+				NavMeshAgent.destination = findNearestDestination();
 
 			//the Y value in destination becomes distorted, so it is ignored for now
 			} else if (NavMeshAgent.destination.x == startPos.x && NavMeshAgent.destination.z == startPos.z) {
@@ -121,8 +122,16 @@ public class Navigation : MonoBehaviour {
 		if (!inVenue) {
 			locations = locationManager.getLocations ("Entrance");
 			//once goals are in place this will be the check for event over(or something like that) && inVenue
+		
+		} else if(inVenue){
+			//continue finding goals to do in venue
+			locations = locationManager.getLocations("Goal");
+			int index = Random.Range (0, locations.Length);
+			Debug.Log (index);
+			return locations [index].transform.position;
+
 		} else {
-			//temp code for finding exit
+			//event over, leave
 			locations = locationManager.getLocations("Exit");
 		}
 
@@ -138,7 +147,7 @@ public class Navigation : MonoBehaviour {
 			}
 		}
 
-		Debug.Log ("Nearest location found at: " + nearest.transform.position.x + ", " + nearest.transform.position.y + ", " + nearest.transform.position.z);
+		//Debug.Log ("Nearest location found at: " + nearest.transform.position.x + ", " + nearest.transform.position.y + ", " + nearest.transform.position.z);
 		return nearest.transform.position;
 	}
 }

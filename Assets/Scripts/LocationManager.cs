@@ -6,11 +6,14 @@ public class LocationManager : MonoBehaviour {
 	private GameObject[] entrances;
 	private GameObject[] exits;
 	private GameObject[] goals;
+	private GameObject center;
 
 	// Use this for initialization
 	void Start () {
 		entrances = findLocations ("Entrance");
 		exits = findLocations ("Exit");
+		goals = findLocations ("Goal");
+		center = GameObject.Find ("BuildingCenter");
 	}
 	
 	// Update is called once per frame
@@ -21,14 +24,6 @@ public class LocationManager : MonoBehaviour {
 	GameObject[] findLocations(string tag){
 		//Finds all locations with the passed in tag
 		GameObject[] tempArray = GameObject.FindGameObjectsWithTag (tag);
-		if (tempArray != null) {
-			for (int i = 0; i < tempArray.Length; ++i) {
-				GameObject tempObject = tempArray [i];
-				//Debug.Log (tag +" found at: " + tempObject.transform.position.x + ", " + tempObject.transform.position.y + ", " + tempObject.transform.position.z);
-			}
-		} else {
-			Debug.Log ("No "+tag+"s found");
-		}
 		return tempArray;
 	}
 
@@ -43,5 +38,12 @@ public class LocationManager : MonoBehaviour {
 		default:
 			return null;
 		}
+	}
+
+
+	//WIP
+	public float activeRadius(){
+
+		return 0.0f;
 	}
 }
