@@ -18,7 +18,7 @@ public class POI : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other){
 		//Test to make sure collision is by agent with interest value
-		if (other.gameObject.tag == "Agent" && other.gameObject.GetComponent<Navigation> ().stoppingValue < interestLevel) {
+		if (other.gameObject.tag == "Agent" && other.gameObject.GetComponent<Navigation> ().distractionValue < interestLevel) {
 			other.gameObject.GetComponent<Navigation> ().distract ();
 			var NavMeshAgent = other.gameObject.GetComponent<NavMeshAgent> ();
 		

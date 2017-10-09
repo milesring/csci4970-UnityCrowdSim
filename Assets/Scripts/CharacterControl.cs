@@ -8,7 +8,7 @@ using UnityEngine.AI;
 
 public class CharacterControl : MonoBehaviour {
 
-	public Camera camera;
+	public Camera characterCamera;
 
 	// Use this for initialization
 	void Start () {
@@ -21,7 +21,7 @@ public class CharacterControl : MonoBehaviour {
 		if (Input.GetMouseButtonDown (0)) {
 			Vector3 worldPos = new Vector3 ();
 	
-			worldPos = camera.ScreenToWorldPoint (Input.mousePosition);
+			worldPos = characterCamera.ScreenToWorldPoint (Input.mousePosition);
 			Debug.Log ("screen pos: " + Input.mousePosition);
 			Debug.Log ("World pos: " + worldPos);
 			GetComponent<NavMeshAgent>().destination = worldPos;

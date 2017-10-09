@@ -24,13 +24,13 @@ public class MouseLook : MonoBehaviour {
 
 	private bool rotationEnabled;
 
-	private Camera camera;
+	private Camera mouseCamera;
 
 	// Use this for initialization
 	void Start () {
 		rotationEnabled = false;
 
-		camera = this.GetComponent<Camera> ();
+		mouseCamera = this.GetComponent<Camera> ();
 	}
 	
 	// Update is called once per frame
@@ -79,7 +79,7 @@ public class MouseLook : MonoBehaviour {
 		movement *= tempSpeed;
 		movement *= Time.deltaTime;
 
-		camera.transform.Translate(movement);
+		mouseCamera.transform.Translate(movement);
 
 
 	}

@@ -6,6 +6,7 @@ public class LocationManager : MonoBehaviour {
 	private GameObject[] entrances;
 	private GameObject[] exits;
 	private GameObject[] goals;
+	public float centerRadius;
 	private GameObject center;
 
 	// Use this for initialization
@@ -40,10 +41,13 @@ public class LocationManager : MonoBehaviour {
 		}
 	}
 
+	public Vector3 findNearestDestroyRadius(Vector3 agentPos){
+		Vector3 heading = agentPos - center.transform.position;
+		float distance = heading.magnitude;
+		Vector3 direction = heading / distance;
 
-	//WIP
-	public float activeRadius(){
-
-		return 0.0f;
+		Debug.Log ("Direction: " + (direction*centerRadius));
+		//Vector3 destroyPoint = -heading * centerRadius;
+		return direction*centerRadius;
 	}
 }
