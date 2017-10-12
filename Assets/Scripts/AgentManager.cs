@@ -7,10 +7,12 @@ public class AgentManager : MonoBehaviour {
 
 	public int agentAmount;
 	private int agentCount;
+	EventManager eventManager;
 
 	// Use this for initialization
 	void Start () {
 		agentCount = 0;
+		eventManager = GameObject.Find ("EventManager").GetComponent<EventManager> ();
 	}
 	
 	// Update is called once per frame
@@ -27,7 +29,7 @@ public class AgentManager : MonoBehaviour {
 	}
 
 	public bool spawnAllowed(){
-		if (agentCount >= agentAmount) {
+		if (agentCount >= agentAmount || eventManager.eventOver()) {
 			return false;
 		}
 

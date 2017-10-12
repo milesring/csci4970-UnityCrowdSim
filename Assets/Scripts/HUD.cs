@@ -12,14 +12,20 @@ public class HUD : MonoBehaviour {
 //	[SerializeField]
 //	private Button emergencyButton;
 
+	private AgentManager agentManager;
+
 	private string currentPOV = "default";
 
 	private readonly string ACTOR_NUM_FORMAT= "Number of Actors: {0}";
+
+
 
 	// Use this for initialization
 	void Start () {
 		Button btn = povButton.GetComponent<Button>();
 		btn.onClick.AddListener(POVclick);
+
+		agentManager = GameObject.Find ("AgentManager").GetComponent<AgentManager>();
 	}
 
 	void POVclick() {
@@ -36,9 +42,10 @@ public class HUD : MonoBehaviour {
 //		default: currentPOV = "default";
 		}
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		numberOfActors.text = string.Format(ACTOR_NUM_FORMAT, GameObject.FindGameObjectsWithTag("Agent").Length);
+		//numberOfActors.text = string.Format(ACTOR_NUM_FORMAT, GameObject.FindGameObjectsWithTag("Agent").Length);
+		numberOfActors.text = string.Format(ACTOR_NUM_FORMAT, agentManager.AgentCount());
 	}
 }
