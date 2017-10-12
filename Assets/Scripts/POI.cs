@@ -8,7 +8,7 @@ public class POI : MonoBehaviour {
 	public float turnSpeed = 2.0f;
 	// Use this for initialization
 	void Start () {
-		interestLevel = Random.Range(0.0f, 0.5f);
+		interestLevel = Random.Range(0.4f, 0.8f);
 	}
 	
 	// Update is called once per frame

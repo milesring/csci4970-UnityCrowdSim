@@ -51,4 +51,8 @@ public class AgentManager : MonoBehaviour {
 			//Debug.Log ("Agent " + i + " notified of event ending");
 		}
 	}
+
+	public int AgentCount(){
+		return agentCount;
+	}
 }

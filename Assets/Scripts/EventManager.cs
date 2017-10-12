@@ -20,12 +20,13 @@ public class EventManager : MonoBehaviour {
 		eventTimer += Time.deltaTime;
 		if (!eventOverCalled && eventTimer > eventTime) {
 			agentManager.notifyAgents ();
-			Debug.Log ("Agents notified");
+			//Debug.Log ("Agents notified");
 			eventOverCalled = true;
 		}
+			
+	}
 
-		if(eventOverCalled){
-			//agentManager.destroyAgents ();
-		}
+	public bool eventOver(){
+		return eventOverCalled;
 	}
 }

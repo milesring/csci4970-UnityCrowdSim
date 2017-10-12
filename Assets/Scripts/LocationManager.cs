@@ -46,7 +46,7 @@ public class LocationManager : MonoBehaviour {
 		float distance = heading.magnitude;
 		Vector3 direction = heading / distance;
 
-		Debug.Log ("Direction: " + (direction*centerRadius));
+		//Debug.Log ("Direction: " + (direction*centerRadius));
 		//Vector3 destroyPoint = -heading * centerRadius;
 		return direction*centerRadius;
 	}

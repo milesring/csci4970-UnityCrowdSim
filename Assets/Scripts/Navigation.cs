@@ -29,6 +29,10 @@ public class Navigation : MonoBehaviour {
 	private Vector3 lastDestination;
 	private float speed;
 	private bool inVenue;
+	private GameObject destination;
+
+	private bool atGoal;
+	private bool inQueue;
 
 	// Use this for initialization
 	void Start () {
@@ -39,6 +43,8 @@ public class Navigation : MonoBehaviour {
 		eventOver = false;
 		tripTimer = 0.0f;
 		distractionTimer = 0.0f;
+		atGoal = false;
+		inQueue = false;
 		//startPos = this.transform.position;
 		goalTime = Random.Range (goalTimeMin, goalTimeMax);
 
@@ -56,7 +62,7 @@ public class Navigation : MonoBehaviour {
 				NavMeshAgent.destination = new Vector3 (100, 0, 8.4f);
 			}
 		} else {
-			NavMeshAgent.destination = findNearestDestination ();
+			NavMeshAgent.destination = findNearestDestination ().transform.position;
 		}
 
 		speed = NavMeshAgent.speed;
@@ -69,6 +75,19 @@ public class Navigation : MonoBehaviour {
 		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
 		//increase total alive timer, used later for statistics
 		tripTimer += Time.deltaTime;
+
+
+
+		if (eventOver && !leaving) {
+			//Debug.Log ("Event over, leaving");
+			inQueue = false;
+			atGoal = false;
+			leaving = true;
+			NavMeshAgent.destination = findNearestDestination ().transform.position;
+			NavMeshAgent.speed = speed;
+		}
+			
+
 
 		if (distracted) {
 			distractionTimer += Time.deltaTime;
@@ -86,14 +105,13 @@ public class Navigation : MonoBehaviour {
 			}
 		}
 
-		if (eventOver && !leaving) {
-			Debug.Log ("Event over, leaving");
-			leaving = true;
-			NavMeshAgent.destination = findNearestDestination ();
-			NavMeshAgent.speed = speed;
+			
+		if (atGoal || inQueue) { // || inLine
+
+
 		}
 		//Stop moving if destination reached
-		if ((NavMeshAgent.destination - this.transform.position).sqrMagnitude < destinationPadding*destinationPadding) {
+		else if ((NavMeshAgent.destination - this.transform.position).sqrMagnitude < destinationPadding*destinationPadding) {
 			if (NavMeshAgent.destination.x == endPos.x && NavMeshAgent.destination.y == endPos.y) {
 				Debug.Log ("destroy gameobject");
 			}
@@ -103,29 +121,23 @@ public class Navigation : MonoBehaviour {
 				inVenue = true;
 				//find nearest destination in the building, at this point a goal should be sought out
 				//aka dancefloor, bar, seating, etc.
-				NavMeshAgent.destination = findNearestDestination ();
+				destination = findNearestDestination ();
+				NavMeshAgent.destination = destination.transform.position;
 			} else if (eventOver && inVenue) {
 				Debug.Log ("Agent reached exit, leaving from venue");
 				inVenue = false;
-				NavMeshAgent.destination = findNearestDestination ();
+				destination = findNearestDestination ();
+				NavMeshAgent.destination = destination.transform.position;
 			} else if (inVenue) {
-				//in venue, continue iterating through main goals in venue based on timer
-				goalTimer += Time.deltaTime;
+				//reached goal
+				destination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
+				atGoal = true;
 				NavMeshAgent.speed = 0.0f;
-				if (goalTimer > goalTime) {
-					//find new venue goal
-					NavMeshAgent.destination = findNearestDestination ();
+				Debug.Log ("At goal");
 
-					//resume moving
-					NavMeshAgent.speed = speed;
-
-					//reset timer
-					goalTimer = 0.0f;
-				}
 			} else {
-				//head to the outside
-				Debug.Log("Heading to destroy radius");
-				NavMeshAgent.destination = findNearestDestination();
+				Debug.Log ("In the else statement");
+				NavMeshAgent.speed = 0.0f;
 			}
 		}
 	}
@@ -139,28 +151,30 @@ public class Navigation : MonoBehaviour {
 		lastDestination = NavMeshAgent.destination;
 	}
 
-	Vector3 findNearestDestination(){
+	GameObject findNearestDestination(){
 		GameObject[] locations;
 		if (!inVenue && !eventOver) {
 			locations = locationManager.getLocations ("Entrance");
-			Debug.Log ("Finding closest entrance");
+			//Debug.Log ("Finding closest entrance");
 			//once goals are in place this will be the check for event over(or something like that) && inVenue
 
 		} else if (eventOver && inVenue) {
 			//event over, leave
 			locations = locationManager.getLocations ("Exit");
-			Debug.Log ("Finding closest exit");
+			//Debug.Log ("Finding closest exit");
 		} else if(eventOver && !inVenue){
 			endPos = locationManager.findNearestDestroyRadius (transform.position);
-			Debug.Log ("Finding oustide location to be destroyed");
-			Debug.Log (endPos);
-			return endPos;
+			//Debug.Log ("Finding oustide location to be destroyed");
+			//Debug.Log (endPos);
+			GameObject temp = new GameObject();
+			temp.transform.position = (endPos);
+			return temp;
 		} else if (inVenue) {
 			//continue finding goals to do in venue
 			locations = locationManager.getLocations ("Goal");
 			int index = Random.Range (0, locations.Length);
-			Debug.Log ("Found goal at :"+index);
-			return locations [index].transform.position;
+			//Debug.Log ("Found goal at :"+index);
+			return locations [index];
 		} else {
 			locations = locationManager.getLocations ("Exit");
 		}
@@ -179,7 +193,7 @@ public class Navigation : MonoBehaviour {
 		}
 
 		//Debug.Log ("Nearest location found at: " + nearest.transform.position.x + ", " + nearest.transform.position.y + ", " + nearest.transform.position.z);
-		return nearest.transform.position;
+		return nearest;
 	}
 
 	public void endEvent(){
@@ -190,4 +204,23 @@ public class Navigation : MonoBehaviour {
 		return inVenue;
 	}
 
+	public void AtGoal(bool value){
+		atGoal = value;
+	}
+
+	public bool IsAtGoal(){
+		return atGoal;
+	}
+
+	public void InQueue(bool value){
+		inQueue = value;
+	}
+
+	public bool IsInQueue(){
+		return inQueue;
+	}
+
+	public GameObject GetDestination(){
+		return destination;
+	}
 }

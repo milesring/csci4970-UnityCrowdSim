@@ -1,12 +1,13 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/LocationManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/AgentCollider.cs">
     <Files>
-      <File FileName="Assets/Scripts/Navigation.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/LocationManager.cs" Line="44" Column="43" />
+      <File FileName="Assets/Scripts/LocationManager.cs" Line="21" Column="18" />
       <File FileName="Assets/Scripts/GenerateAgents.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/EventManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/AgentManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/QueueLogic.cs" Line="33" Column="53" />
+      <File FileName="Assets/Scripts/AgentCollider.cs" Line="20" Column="62" />
+      <File FileName="Assets/Scripts/DestinationVisualization.cs" Line="15" Column="74" />
+      <File FileName="Assets/Scripts/Navigation.cs" Line="118" Column="59" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
