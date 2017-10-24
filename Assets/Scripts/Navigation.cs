@@ -1,14 +1,18 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// This class controls the navigation behavior of an agent. This includes updating the agent's destination 
+/// and tracking various status values such as the agent's distraction
+/// </summary>
 public class Navigation : MonoBehaviour {
 	private LocationManager locationManager;
 
 	[Header("Venue Navigation")]
-    [System.Obsolete("useTarget is scheduled for removal.")]
-    public bool useTarget;
-    public Transform target;
-	public float destinationPadding;
+    /// <summary>
+    /// Distance to stop prior to destination
+    /// </summary>
+   	public float destinationPadding;
 	private float tripTimer;
 	private bool leaving;
 
@@ -17,15 +21,18 @@ public class Navigation : MonoBehaviour {
 	public float goalTimeMax;
 	private float goalTimer;
 	private float goalTime;
+    // TODO "eventOver" isn't an agent's property, it is an environment property. This should be moved.
 	private bool eventOver;
 
 	[Header("Points of Interest")]
-	public float distractionValue;
+    /// <summary>
+    ///  How long an agent will be distracted for
+    /// </summary>
 	public float distractionTime;
-	private bool distracted;
+	private float distractionValue;
+    private bool distracted;
 	private float distractionTimer;
 
-	//private Vector3 startPos;
 	private Vector3 endPos;
 	private Vector3 lastDestination;
 	private float speed;
@@ -34,6 +41,8 @@ public class Navigation : MonoBehaviour {
 
 	private bool atGoal;
 	private bool inQueue;
+
+    private NavMeshAgent agent;
 
 	// Use this for initialization
 	void Start () {
@@ -46,35 +55,19 @@ public class Navigation : MonoBehaviour {
 		distractionTimer = 0.0f;
 		atGoal = false;
 		inQueue = false;
-		//startPos = this.transform.position;
-		goalTime = Random.Range (goalTimeMin, goalTimeMax);
 
-		//assign fake "interest" value that must be exceeded by a POI to distract agent
-		distractionValue = Random.Range(0.4f, 1.0f);
+        // FIXME this is unused
+        goalTime = Random.Range(goalTimeMin, goalTimeMax);
+        distractionValue = Random.Range(0.4f, 1.0f);
 
-		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
+        agent = this.GetComponent<NavMeshAgent>();
+        agent.destination = findNearestDestination().transform.position;
 
-        // FIXME useTarget is deprecated and scehduled for removal
-		if (useTarget) {
-			if (target != null) {
-				//Debug.Log(message: "Transform found: " + target.position);
-				NavMeshAgent.destination = target.position;
-			} else {
-				// Use default location
-				NavMeshAgent.destination = new Vector3 (100, 0, 8.4f);
-			}
-		} else {
-			NavMeshAgent.destination = findNearestDestination ().transform.position;
-		}
-
-		speed = NavMeshAgent.speed;
-
+		speed = agent.speed;
 	}
 
 	// Update is called once per frame
 	void Update () {
-
-		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
 		//increase total alive timer, used later for statistics
 		tripTimer += Time.deltaTime;
 
@@ -83,62 +76,74 @@ public class Navigation : MonoBehaviour {
 			inQueue = false;
 			atGoal = false;
 			leaving = true;
-			NavMeshAgent.destination = findNearestDestination ().transform.position;
-			NavMeshAgent.speed = speed;
+            agent.destination = findNearestDestination ().transform.position;
+            agent.speed = speed;
 		}
 
-		if (distracted) {
-			distractionTimer += Time.deltaTime;
-			//Debug.Log ("Distracted for: " + distractionTimer + "s");
-			if (distractionTimer > distractionTime) {
-				//restore last goal for agent
-				NavMeshAgent.destination = lastDestination;
-				distracted = false;
+        if (distracted) {
+            distractionUpdate();
+        }
 
-				//resume speed
-				NavMeshAgent.speed = speed;
+        destinationUpdate();
+    }
 
-				//reset timer
-				distractionTimer = 0.0f;
-			}
-		}
+    // Updates counters associated with being distracted.
+    private void distractionUpdate() {
+        distractionTimer += Time.deltaTime;
+        //Debug.Log ("Distracted for: " + distractionTimer + "s");
 
+        if (distractionTimer > distractionTime) {
+            //restore last goal for agent
+            agent.destination = lastDestination;
+            distracted = false;
 
-		if (atGoal || inQueue) { // || inLine
+            //resume speed
+            agent.speed = speed;
 
+            //reset timer
+            distractionTimer = 0.0f;
+        }
+    }
 
-		} else if ((NavMeshAgent.destination - this.transform.position).sqrMagnitude < destinationPadding*destinationPadding) {
-            //Stop moving if destination reached
-			if (NavMeshAgent.destination.x == endPos.x && NavMeshAgent.destination.y == endPos.y) {
-				Debug.Log ("destroy gameobject");
-			}
+    // Checks agent's status booleans and updates its goals / destinations as required
+    private void destinationUpdate() {
+        if (atGoal || inQueue) {
+            // Agent in a queue or at their goal
 
-			if (!inVenue && !eventOver) {
-				Debug.Log ("Agent Entered Venue\nFinding new goal");
-				inVenue = true;
-				//find nearest destination in the building, at this point a goal should be sought out
-				//aka dancefloor, bar, seating, etc.
-				destination = findNearestDestination ();
-				NavMeshAgent.destination = destination.transform.position;
-			} else if (eventOver && inVenue) {
-				Debug.Log ("Agent reached exit, leaving from venue");
-				inVenue = false;
-				destination = findNearestDestination ();
-				NavMeshAgent.destination = destination.transform.position;
-			} else if (inVenue) {
-				//reached goal
-				destination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
-				atGoal = true;
-				NavMeshAgent.speed = 0.0f;
-				Debug.Log ("At goal");
+        } else if ((agent.destination - this.transform.position).sqrMagnitude < Mathf.Pow(destinationPadding, 2)) {
+            if (agent.destination.x == endPos.x && agent.destination.y == endPos.y) {
+                //Stop moving if destination reached
+            }
 
-			} else {
-				Debug.Log ("In the else statement");
-				NavMeshAgent.speed = 0.0f;
-			}
-		}
-	}
+            // FIXME is this supposed to be an "else if"?
+            if (!inVenue && !eventOver) {
+                Debug.Log("Agent entered venue. Finding new goal");
+                inVenue = true;
+                //find nearest destination in the building, at this point a goal should be sought out
+                //aka dancefloor, bar, seating, etc.
+                destination = findNearestDestination();
+                agent.destination = destination.transform.position;
+            } else if (eventOver && inVenue) {
+                Debug.Log("Agent reached exit. Leaving the venue");
+                inVenue = false;
+                destination = findNearestDestination();
+                agent.destination = destination.transform.position;
+            } else if (inVenue) {
+                Debug.Log("Agent reached goal");
+                destination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
+                atGoal = true;
+                agent.speed = 0.0f;
+            } else {
+                Debug.Log("Agent error in destinationUpdate(). Stopping.");
+                agent.speed = 0.0f;
+            }
+        }
+    }
 
+    /// <summary>
+    /// Calling this method distracts the agent, causing the agent to stop for a predetermined amount of time.
+    /// Once the distraction time has expired, the agent will continue to its previous destination.
+    /// </summary>
 	public void distract(){
 		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
 		distractionTimer = 0.0f;
@@ -148,13 +153,14 @@ public class Navigation : MonoBehaviour {
 		lastDestination = NavMeshAgent.destination;
 	}
 
-	GameObject findNearestDestination(){
+    // Based on this agent's status booleans, find an appropriate destination
+    private GameObject findNearestDestination(){
 		GameObject[] locations;
 		if (!inVenue && !eventOver) {
 			locations = locationManager.getLocations ("Entrance");
 			//Debug.Log ("Finding closest entrance");
-			//once goals are in place this will be the check for event over(or something like that) && inVenue
-
+			// TODO once goals are in place this will be the check for event over(or something like that) && inVenue
+        
 		} else if (eventOver && inVenue) {
 			//event over, leave
 			locations = locationManager.getLocations ("Exit");
@@ -176,50 +182,80 @@ public class Navigation : MonoBehaviour {
 			locations = locationManager.getLocations ("Exit");
 		}
 
+        //find nearest location
+        return calculateNearest(locations);
+    }
 
-		//find nearest location
-		GameObject nearest = null;
-		for(int i=0;i<locations.Length;++i){
-			if (nearest == null) {
-				nearest = locations [i];
-                // No check needs to be performed- automatically closest target
-                continue;
-			}
+    // Given an array of locations, determine which location is the nearest to the agent
+    private GameObject calculateNearest(GameObject[] locations) {
+        GameObject nearest = null;
+        foreach (GameObject location in locations) {
+            if (nearest == null) {
+                nearest = location;
+            } else {
+                float magnitudeToAltLocation 
+                    = (location.transform.position - this.transform.position).magnitude;
+                float magnitudeToCurrNearestLocation 
+                    = (nearest.transform.position - this.transform.position).magnitude;
+                if (magnitudeToAltLocation < magnitudeToCurrNearestLocation) {
+                    nearest = location;
+                }
+            }
+        }
 
-			if ((locations [i].transform.position - this.transform.position).magnitude < (nearest.transform.position - this.transform.position).magnitude) {
-					nearest = locations [i];
-			}
-		}
+        //Debug.Log ("Nearest location found at: " + nearest.transform.position.x + ", " + nearest.transform.position.y + ", " + nearest.transform.position.z);
+        return nearest;
+    }
 
-		//Debug.Log ("Nearest location found at: " + nearest.transform.position.x + ", " + nearest.transform.position.y + ", " + nearest.transform.position.z);
-		return nearest;
-	}
-
+    /// <summary>
+    /// Ends the event, causing agents to begin exiting
+    /// </summary>
 	public void endEvent(){
 		eventOver = true;
 	}
 
+    /// <returns>true if the agent is outside the venue, otherwise false</returns>
 	public bool isOutside(){
 		return inVenue;
 	}
 
+    /// <summary>
+    /// Sets whether or not the agent has reached its goal
+    /// </summary>
+    /// <param name="value">true if agent has reached its goal, otherwise false</param>
 	public void AtGoal(bool value){
 		atGoal = value;
 	}
 
+    /// <returns>true if the agent is at its goal, otherwise false</returns>
 	public bool IsAtGoal(){
 		return atGoal;
 	}
 
+    /// <summary>
+    /// Sets whether or not the agent is in a queue
+    /// </summary>
+    /// <param name="value">true if agent is in a queue, otherwise false</param>
 	public void InQueue(bool value){
 		inQueue = value;
 	}
 
+    /// <returns>true if the agent is in a queue, otherwise false</returns>
 	public bool IsInQueue(){
 		return inQueue;
 	}
 
+    /// <returns>the destination of the agent</returns>
 	public GameObject GetDestination(){
 		return destination;
 	}
+
+    /// <summary>
+    /// On start, a random value between .4 and 1.0 that is generated and assigned as this agent's
+    /// distractionValue. This is used when comparing to a point of interest's interestLevel.
+    /// </summary>
+    /// <returns>this agent's distraction value</returns>
+    internal float getDistractionValue() {
+        return distractionValue;
+    }
 }

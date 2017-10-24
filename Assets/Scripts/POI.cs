@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
@@ -30,7 +28,7 @@ public class POI : MonoBehaviour {
 	void OnTriggerEnter(Collider other){
 		//Test to make sure collision is by agent with interest value
 		if (other.gameObject.tag == "Agent") {
-            if (other.gameObject.GetComponent<Navigation> ().distractionValue < interestLevel) {
+            if (other.gameObject.GetComponent<Navigation> ().getDistractionValue() < interestLevel) {
     			other.gameObject.GetComponent<Navigation> ().distract ();
     			var NavMeshAgent = other.gameObject.GetComponent<NavMeshAgent> ();
 

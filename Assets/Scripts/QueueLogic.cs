@@ -21,17 +21,17 @@ public class QueueLogic : MonoBehaviour {
      * busy and the queue has another agent in it, begin working with the next agent.
      */
 	void Update () {
-		if (!busy && queue.Any()) {
+		if (!busy && queue.Count > 0) {
 			WorkWithSomeone ();
 		}
 	}
 
 	/// <summary>
-    /// Add agent to end of list
+    /// Add agent to end of the FIFO list
     /// </summary>
 	public void Enqueue(GameObject agent){
 
-		if (!queue.Any()) {
+		if (queue.Count == 0) {
 			agent.GetComponent<NavMeshAgent> ().destination = this.transform.position;
 			agent.GetComponent<Navigation> ().AtGoal (true);
 			agent.GetComponent<Navigation> ().InQueue (false);
@@ -47,13 +47,13 @@ public class QueueLogic : MonoBehaviour {
 		queue.Add (agent);
 	}
 
-	// TODO Does this need to be public?
-    // FIXME This needs functionality
     /// <summary>
     /// Dequeues the agent at the front of the queue, allowing all agents in queue to move up
-    /// on position
+    /// on position.
+    /// 
+    /// FIXME This needs functionality
     /// </summary>
-	public void WorkWithSomeone(){
+	private void WorkWithSomeone(){
 		busy = true;
 		// wait for random amount of time then no longer busy
 
@@ -66,7 +66,7 @@ public class QueueLogic : MonoBehaviour {
 	public void Dequeue(){
 		queue [0].GetComponent<Navigation> ().AtGoal (false);
 		queue.RemoveAt (0);
-		if (queue.Any()) {
+		if (queue.Count > 0) {
 			queue [0].GetComponent<Navigation> ().AtGoal (true);
 			queue [0].GetComponent<Navigation> ().InQueue (false);
 		}
@@ -76,7 +76,7 @@ public class QueueLogic : MonoBehaviour {
 
 	/// <summary>
     /// Returns number of agents in queue
-	/// TODO possibly of altering interest level with how many currently in queue
+	/// TODO possibly alter interest level based on how many agents currently in queue
     /// </summary>
 	public int Length(){
 		return queue.Count;
