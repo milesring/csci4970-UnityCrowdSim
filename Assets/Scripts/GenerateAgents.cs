@@ -1,8 +1,18 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// This class causes a GameObject to generate agents.
+/// </summary>
 public class GenerateAgents : MonoBehaviour {
 
+    /// <summary>
+    /// Whether or not to spawn agents at a fixed location at the generator or in random location
+    /// near the generator
+    /// </summary>
 	public bool randomLocation;
+    /// <summary>
+    /// The type of agent to generate
+    /// </summary>
     public Transform AgentToGenerate;
 
 	public AgentManager agentManager;
@@ -11,6 +21,7 @@ public class GenerateAgents : MonoBehaviour {
 
     // Use this for initialization
 	void Start () {
+
 	}
 
 	// Update is called once per frame

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// A debug class used to visualize the destination of an agent
+/// </summary>
 public class DestinationVisualization : MonoBehaviour {
 	NavMeshAgent agent;
 	// Use this for initialization
