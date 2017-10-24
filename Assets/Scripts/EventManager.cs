@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Holds metadata on the environment
+/// </summary>
 public class EventManager : MonoBehaviour {
-	public float eventTime;
+	private float eventTime;
 	private float eventTimer;
 	private bool eventOverCalled;
 
@@ -26,6 +29,7 @@ public class EventManager : MonoBehaviour {
 			
 	}
 
+    /// <returns>true is the event is over, otherwise false</returns>
 	public bool eventOver(){
 		return eventOverCalled;
 	}

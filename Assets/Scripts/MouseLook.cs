@@ -1,22 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum RotationAxes{
 	MouseXAndY = 0,
 	MouseX = 1, 
 	MouseY = 2
 }
-		
+
+/// <summary>
+/// Attaching this script to a camera object will allow the user to look around with the mouse.
+/// </summary>
 public class MouseLook : MonoBehaviour {
 
 	public RotationAxes axes = RotationAxes.MouseXAndY;
+    /// <summary>
+    /// The camera's horizontal sensitivity
+    /// </summary>
 	public float sensitivityHor = 5.0f;
-	public float sensitivityVert = 5.0f;
+    /// <summary>
+    /// The camera's vertical sensitivity
+    /// </summary>
+    public float sensitivityVert = 5.0f;
 
-	public float minimumVert = -90.0f;
-	public float maximumVert = 90.0f;
+    private float minimumVert = -90.0f;
+    private float maximumVert = 90.0f;
 
+    /// <summary>
+    /// How quickly the camera moves
+    /// </summary>
 	public float speed;
 	private float tempSpeed;
 
@@ -36,27 +46,8 @@ public class MouseLook : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (rotationEnabled) {
-			if (axes == RotationAxes.MouseX) {
-				transform.Rotate (0, Input.GetAxis ("Mouse X") * sensitivityHor, 0);
-			} else if (axes == RotationAxes.MouseY) {
-				//vertical rotation 
-				rotationX -= Input.GetAxis ("Mouse Y") * sensitivityVert;
-				rotationX = Mathf.Clamp (rotationX, minimumVert, maximumVert);
-
-				float rotationY = transform.localEulerAngles.y;
-
-				transform.localEulerAngles = new Vector3 (rotationX, rotationY);
-			} else {
-				//both horiz and vert rotation
-				rotationX -= Input.GetAxis ("Mouse Y") * sensitivityVert;
-				rotationX = Mathf.Clamp (rotationX, minimumVert, maximumVert);
-
-				float delta = Input.GetAxis ("Mouse X") * sensitivityHor;
-				float rotationY = transform.localEulerAngles.y + delta;
-
-				transform.localEulerAngles = new Vector3 (rotationX, rotationY, 0);
-			}
-		}
+            RotateCamera();
+        }
 
 		if (Input.GetMouseButtonDown (1)) {
 			rotationEnabled = true;
@@ -79,8 +70,29 @@ public class MouseLook : MonoBehaviour {
 		movement *= tempSpeed;
 		movement *= Time.deltaTime;
 
-		mouseCamera.transform.Translate(movement);
-
-
+        mouseCamera.transform.Translate(movement);
 	}
+
+    private void RotateCamera() {
+        if (axes == RotationAxes.MouseX) {
+            transform.Rotate(0, Input.GetAxis("Mouse X") * sensitivityHor, 0);
+        } else if (axes == RotationAxes.MouseY) {
+            //vertical rotation 
+            rotationX -= Input.GetAxis("Mouse Y") * sensitivityVert;
+            rotationX = Mathf.Clamp(rotationX, minimumVert, maximumVert);
+
+            float rotationY = transform.localEulerAngles.y;
+
+            transform.localEulerAngles = new Vector3(rotationX, rotationY);
+        } else {
+            //both horiz and vert rotation
+            rotationX -= Input.GetAxis("Mouse Y") * sensitivityVert;
+            rotationX = Mathf.Clamp(rotationX, minimumVert, maximumVert);
+
+            float delta = Input.GetAxis("Mouse X") * sensitivityHor;
+            float rotationY = transform.localEulerAngles.y + delta;
+
+            transform.localEulerAngles = new Vector3(rotationX, rotationY, 0);
+        }
+    }
 }

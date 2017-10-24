@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Destroys agents when they come in contact with the parent object's collider
+/// </summary>
 public class AgentDestroyer : MonoBehaviour {
 	EventManager eventManager;
 	AgentManager agentManager;

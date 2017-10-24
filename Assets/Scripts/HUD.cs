@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class HUD : MonoBehaviour {
@@ -17,8 +15,6 @@ public class HUD : MonoBehaviour {
 	private string currentPOV = "default";
 
 	private readonly string ACTOR_NUM_FORMAT= "Number of Actors: {0}";
-
-
 
 	// Use this for initialization
 	void Start () {

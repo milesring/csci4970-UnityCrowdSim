@@ -2,6 +2,7 @@
 using UnityEngine.AI;
 using System.Collections;
 
+[System.Obsolete("This may not be referenced anywhere in the project.")]
 public class BlendTreeControl : MonoBehaviour {
 
 	// Use this for initialization
