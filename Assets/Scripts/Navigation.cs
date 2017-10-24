@@ -5,7 +5,8 @@ public class Navigation : MonoBehaviour {
 	private LocationManager locationManager;
 
 	[Header("Venue Navigation")]
-	public bool useTarget;
+    [System.Obsolete("useTarget is scheduled for removal.")]
+    public bool useTarget;
     public Transform target;
 	public float destinationPadding;
 	private float tripTimer;
@@ -53,6 +54,7 @@ public class Navigation : MonoBehaviour {
 
 		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
 
+        // FIXME useTarget is deprecated and scehduled for removal
 		if (useTarget) {
 			if (target != null) {
 				//Debug.Log(message: "Transform found: " + target.position);
@@ -68,15 +70,13 @@ public class Navigation : MonoBehaviour {
 		speed = NavMeshAgent.speed;
 
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 
 		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
 		//increase total alive timer, used later for statistics
 		tripTimer += Time.deltaTime;
-
-
 
 		if (eventOver && !leaving) {
 			//Debug.Log ("Event over, leaving");
@@ -86,8 +86,6 @@ public class Navigation : MonoBehaviour {
 			NavMeshAgent.destination = findNearestDestination ().transform.position;
 			NavMeshAgent.speed = speed;
 		}
-			
-
 
 		if (distracted) {
 			distractionTimer += Time.deltaTime;
@@ -105,13 +103,12 @@ public class Navigation : MonoBehaviour {
 			}
 		}
 
-			
+
 		if (atGoal || inQueue) { // || inLine
 
 
-		}
-		//Stop moving if destination reached
-		else if ((NavMeshAgent.destination - this.transform.position).sqrMagnitude < destinationPadding*destinationPadding) {
+		} else if ((NavMeshAgent.destination - this.transform.position).sqrMagnitude < destinationPadding*destinationPadding) {
+            //Stop moving if destination reached
 			if (NavMeshAgent.destination.x == endPos.x && NavMeshAgent.destination.y == endPos.y) {
 				Debug.Log ("destroy gameobject");
 			}
@@ -185,6 +182,8 @@ public class Navigation : MonoBehaviour {
 		for(int i=0;i<locations.Length;++i){
 			if (nearest == null) {
 				nearest = locations [i];
+                // No check needs to be performed- automatically closest target
+                continue;
 			}
 
 			if ((locations [i].transform.position - this.transform.position).magnitude < (nearest.transform.position - this.transform.position).magnitude) {
