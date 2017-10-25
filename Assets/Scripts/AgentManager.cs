@@ -38,10 +38,14 @@ public class AgentManager : MonoBehaviour {
 	public void agentDestroyed(){
 		agentCount--;
 	}
-
+    
     /// <returns>true if agent generation is allowed, otherwise false</returns>
 	public bool spawnAllowed(){
-        return agentCount >= agentAmount || eventManager.eventOver();
+        if (agentCount >= agentAmount || eventManager.eventOver()) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /// <summary>

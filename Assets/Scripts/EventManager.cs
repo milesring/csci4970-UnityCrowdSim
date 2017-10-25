@@ -6,7 +6,7 @@ using UnityEngine;
 /// Holds metadata on the environment
 /// </summary>
 public class EventManager : MonoBehaviour {
-	private float eventTime;
+	public float eventTime;
 	private float eventTimer;
 	private bool eventOverCalled;
 
