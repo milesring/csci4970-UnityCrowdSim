@@ -8,12 +8,22 @@ using UnityEngine;
 /// a FIFO list and slowly dequeue agents from the front of the queue.
 /// </summary>
 public class QueueLogic : MonoBehaviour {
-	List<GameObject> queue;
+    /// <summary>
+    /// The name of the queue- used for debugging purposes
+    /// </summary>
+    public String queueName;
+
+    List<GameObject> queue;
 	bool busy;
+
+    /// How long it takes for the agent at front of queue to complete its task.
+    public float maxQueueWorkTime;
+    float workingTime;
 
 	// Initializes the class
 	void Start () {
 		queue = new List<GameObject> ();
+        workingTime = 0.0f;
 	}
 
 	/*
@@ -21,17 +31,38 @@ public class QueueLogic : MonoBehaviour {
      * busy and the queue has another agent in it, begin working with the next agent.
      */
 	void Update () {
-		if (!busy && queue.Count > 0) {
+        if (busy) {
+            queueWorkTime += Time.deltaTime;
+            if (queueWorkTime >= maxQueueWorkTime) {
+                // TODO Agent is complete with work. Dequeue agent (issue command to continue
+                // to goal) and signal the queue is ready for another agent (either send signal
+                // to agent in front of queue, or make `busy` public and have agents check the bool.
+                // The latter is the preferred approach so that all agents in queue know to move?)
+            }
+        }
+
+        // We have possibly finished with an agent above- check again if the queue is busy
+        if (!busy && queue.Count > 0) {
+            // TODO pull agent to front of queue
 			WorkWithSomeone ();
 		}
 	}
 
+    private void FinishWork() {
+        Debug.Log("Queue " + queueName + " finished with an agent.")
+        busy = false;
+        Dequeue();
+        workingTime = 0.0f;
+    }
+
 	/// <summary>
+    /// TODO An agent at the front of the queue IS in the queue still. `InQueue(false)` should
+    ///     only be called from Dequeue
     /// Add agent to end of the FIFO list
     /// </summary>
 	public void Enqueue(GameObject agent){
-
 		if (queue.Count == 0) {
+            //TODO this should be accessed via an accessor, NOT a direct call
 			agent.GetComponent<NavMeshAgent> ().destination = this.transform.position;
 			agent.GetComponent<Navigation> ().AtGoal (true);
 			agent.GetComponent<Navigation> ().InQueue (false);
@@ -44,13 +75,14 @@ public class QueueLogic : MonoBehaviour {
 			agent.GetComponent<NavMeshAgent> ().speed = 0.0f;
 			Debug.Log ("Agent added to last position of list");
 		}
+
 		queue.Add (agent);
 	}
 
     /// <summary>
     /// Dequeues the agent at the front of the queue, allowing all agents in queue to move up
     /// on position.
-    /// 
+    ///
     /// FIXME This needs functionality
     /// </summary>
 	private void WorkWithSomeone(){
@@ -61,6 +93,7 @@ public class QueueLogic : MonoBehaviour {
 	}
 
     /// <summary>
+    /// TODO Does this need to be public? Other elements should not be able to dequeue agents
     /// Remove the agent at the front of the queue
     /// </summary>
 	public void Dequeue(){

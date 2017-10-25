@@ -2,7 +2,7 @@
 using UnityEngine.AI;
 
 /// <summary>
-/// This class controls the navigation behavior of an agent. This includes updating the agent's destination 
+/// This class controls the navigation behavior of an agent. This includes updating the agent's destination
 /// and tracking various status values such as the agent's distraction
 /// </summary>
 public class Navigation : MonoBehaviour {
@@ -107,9 +107,11 @@ public class Navigation : MonoBehaviour {
 
     // Checks agent's status booleans and updates its goals / destinations as required
     private void destinationUpdate() {
-        if (atGoal || inQueue) {
-            // Agent in a queue or at their goal
-
+        if (IsAtGoal) {
+            // TODO any logic here?
+        } else if (IsInQueue) {
+            // TODO Check position in queue. Move if necessary. If at front of queue and queue
+            // ready for next agent, move up
         } else if ((agent.destination - this.transform.position).sqrMagnitude < Mathf.Pow(destinationPadding, 2)) {
             if (agent.destination.x == endPos.x && agent.destination.y == endPos.y) {
                 //Stop moving if destination reached
@@ -160,7 +162,7 @@ public class Navigation : MonoBehaviour {
 			locations = locationManager.GetLocations ("Entrance");
 			//Debug.Log ("Finding closest entrance");
 			// TODO once goals are in place this will be the check for event over(or something like that) && inVenue
-        
+
 		} else if (eventOver && inVenue) {
 			//event over, leave
 			locations = locationManager.GetLocations("Exit");
@@ -193,9 +195,9 @@ public class Navigation : MonoBehaviour {
             if (nearest == null) {
                 nearest = location;
             } else {
-                float magnitudeToAltLocation 
+                float magnitudeToAltLocation
                     = (location.transform.position - this.transform.position).magnitude;
-                float magnitudeToCurrNearestLocation 
+                float magnitudeToCurrNearestLocation
                     = (nearest.transform.position - this.transform.position).magnitude;
                 if (magnitudeToAltLocation < magnitudeToCurrNearestLocation) {
                     nearest = location;
