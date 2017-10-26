@@ -107,9 +107,9 @@ public class Navigation : MonoBehaviour {
 
     // Checks agent's status booleans and updates its goals / destinations as required
     private void destinationUpdate() {
-        if (IsAtGoal) {
+        if (IsAtGoal()) {
             // TODO any logic here?
-        } else if (IsInQueue) {
+        } else if (IsInQueue()) {
             // TODO Check position in queue. Move if necessary. If at front of queue and queue
             // ready for next agent, move up
         } else if ((agent.destination - this.transform.position).sqrMagnitude < Mathf.Pow(destinationPadding, 2)) {

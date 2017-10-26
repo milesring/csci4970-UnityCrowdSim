@@ -11,19 +11,19 @@ public class QueueLogic : MonoBehaviour {
     /// <summary>
     /// The name of the queue- used for debugging purposes
     /// </summary>
-    public String queueName;
+    public string queueName;
 
     List<GameObject> queue;
 	bool busy;
 
     /// How long it takes for the agent at front of queue to complete its task.
     public float maxQueueWorkTime;
-    float workingTime;
+    float queueWorkTime;
 
 	// Initializes the class
 	void Start () {
 		queue = new List<GameObject> ();
-        workingTime = 0.0f;
+        queueWorkTime = 0.0f;
 	}
 
 	/*
@@ -49,10 +49,10 @@ public class QueueLogic : MonoBehaviour {
 	}
 
     private void FinishWork() {
-        Debug.Log("Queue " + queueName + " finished with an agent.")
+        Debug.Log("Queue " + queueName + " finished with an agent.");
         busy = false;
         Dequeue();
-        workingTime = 0.0f;
+        queueWorkTime = 0.0f;
     }
 
 	/// <summary>
