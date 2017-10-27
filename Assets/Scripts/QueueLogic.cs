@@ -38,13 +38,13 @@ public class QueueLogic : MonoBehaviour {
                 // to goal) and signal the queue is ready for another agent (either send signal
                 // to agent in front of queue, or make `busy` public and have agents check the bool.
                 // The latter is the preferred approach so that all agents in queue know to move?)
+                FinishWork();
             }
         }
 
         // We have possibly finished with an agent above- check again if the queue is busy
         if (!busy && queue.Count > 0) {
-            // TODO pull agent to front of queue
-			WorkWithSomeone ();
+            busy = true;
 		}
 	}
 
@@ -55,56 +55,45 @@ public class QueueLogic : MonoBehaviour {
         queueWorkTime = 0.0f;
     }
 
-	/// <summary>
+    /// <summary>
     /// TODO An agent at the front of the queue IS in the queue still. `InQueue(false)` should
     ///     only be called from Dequeue
     /// Add agent to end of the FIFO list
     /// </summary>
-	public void Enqueue(GameObject agent){
-		if (queue.Count == 0) {
+    public void Enqueue(GameObject agent) {
+        Navigation newAgent = agent.GetComponent<Navigation>();
+        newAgent.InQueue(true);
+        queue.Add(agent);
+
+        if (queue.Count == 0) {
             //TODO this should be accessed via an accessor, NOT a direct call
-			agent.GetComponent<NavMeshAgent> ().destination = this.transform.position;
-			agent.GetComponent<Navigation> ().AtGoal (true);
-			agent.GetComponent<Navigation> ().InQueue (false);
+            agent.GetComponent<NavMeshAgent>().destination = this.transform.position;
+            newAgent.AtGoal(true);
 
-			Debug.Log ("Agent added to front of list");
-		} else {
-			agent.GetComponent<NavMeshAgent> ().destination = getLast ();
-			agent.GetComponent<Navigation> ().InQueue (true);
-			agent.GetComponent<Navigation> ().AtGoal (false);
-			agent.GetComponent<NavMeshAgent> ().speed = 0.0f;
-			Debug.Log ("Agent added to last position of list");
-		}
-
-		queue.Add (agent);
-	}
-
-    /// <summary>
-    /// Dequeues the agent at the front of the queue, allowing all agents in queue to move up
-    /// on position.
-    ///
-    /// FIXME This needs functionality
-    /// </summary>
-	private void WorkWithSomeone(){
-		busy = true;
-		// wait for random amount of time then no longer busy
-
-		//Dequeue();
-	}
+            Debug.Log(newAgent.GetAgentName() + " added to front of list and will be next served.");
+        } else {
+            agent.GetComponent<NavMeshAgent>().destination = getLast();
+            newAgent.AtGoal(false);
+            newAgent.StopAgent();
+            Debug.Log(newAgent.GetAgentName() + " added at position " + (queue.Count - 1) + " of list.");
+        }
+    }
 
     /// <summary>
     /// TODO Does this need to be public? Other elements should not be able to dequeue agents
     /// Remove the agent at the front of the queue
     /// </summary>
-	public void Dequeue(){
-		queue [0].GetComponent<Navigation> ().AtGoal (false);
-		queue.RemoveAt (0);
-		if (queue.Count > 0) {
-			queue [0].GetComponent<Navigation> ().AtGoal (true);
-			queue [0].GetComponent<Navigation> ().InQueue (false);
-		}
+	public void Dequeue() {
+        Navigation finishedAgent = queue[0].GetComponent<Navigation>();
+        finishedAgent.AtGoal (false);
+        finishedAgent.AgentOfDestruction();
 
-		busy = false;
+        queue.RemoveAt (0);
+        if (queue.Count > 0) {
+            //queue[0].GetComponent<Navigation>().AtGoal(true);
+            queue[0].GetComponent<NavMeshAgent>().destination = this.transform.position;
+            queue[0].GetComponent<Navigation>().ResumeAgentSpeed();
+        }
 	}
 
 	/// <summary>

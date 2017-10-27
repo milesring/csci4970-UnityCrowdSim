@@ -19,6 +19,8 @@ public class AgentCollider : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other){
+        Navigation thisAgent = this.gameObject.GetComponent<Navigation>();
+        Navigation otherAgent = other.gameObject.GetComponent<Navigation>();
         /*
          * If the colliding object is an agent
          * AND this object is not in a queue
@@ -27,11 +29,13 @@ public class AgentCollider : MonoBehaviour {
          * THEN enqueue this object in the destination's queue
          */
         if (other.gameObject.CompareTag("Agent")
-            && !this.gameObject.GetComponent<Navigation>().IsInQueue()
-            && other.gameObject.GetComponent<Navigation>().IsAtGoal()
-            && other.gameObject.GetComponent<Navigation>().GetDestination()
-                == this.gameObject.GetComponent<Navigation>().GetDestination()) {
-            Debug.Log("Agents have same goal finding position in line");
+            && !thisAgent.IsInQueue()
+            && (otherAgent.IsAtGoal() || otherAgent.IsInQueue())
+            && otherAgent.GetDestination()
+                == thisAgent.GetDestination()) {
+            Debug.Log(thisAgent.GetAgentName() + " and " + otherAgent.GetAgentName() 
+                + " have same goal. Adding agent " + thisAgent.GetAgentName() + " in queue behind " 
+                + otherAgent.GetAgentName());
 
             this.gameObject.GetComponent<Navigation>().GetDestination()
                 .GetComponent<QueueLogic>().Enqueue(this.gameObject);
