@@ -29,13 +29,13 @@ public class AgentCollider : MonoBehaviour {
          * THEN enqueue this object in the destination's queue
          */
         if (other.gameObject.CompareTag("Agent")
-            && !thisAgent.IsInQueue()
-            && (otherAgent.IsAtGoal() || otherAgent.IsInQueue())
+            && !thisAgent.InQueue
+            && (otherAgent.AtGoal || otherAgent.InQueue)
             && otherAgent.GetDestination()
                 == thisAgent.GetDestination()) {
-            Debug.Log(thisAgent.GetAgentName() + " and " + otherAgent.GetAgentName() 
-                + " have same goal. Adding agent " + thisAgent.GetAgentName() + " in queue behind " 
-                + otherAgent.GetAgentName());
+            Debug.Log(thisAgent.AgentName + " and " + otherAgent.AgentName
+                + " have same goal. Adding agent " + thisAgent.AgentName + " in queue behind " 
+                + otherAgent.AgentName);
 
             this.gameObject.GetComponent<Navigation>().GetDestination()
                 .GetComponent<QueueLogic>().Enqueue(this.gameObject);
