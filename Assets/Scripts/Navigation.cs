@@ -8,7 +8,14 @@ using UnityEngine.AI;
 public class Navigation : MonoBehaviour {
     private LocationManager locationManager;
     private static int agentNumber = 0;
-    private string agentName;
+    public string Name
+    {
+        get; set;
+    }
+
+    internal string AgentName {
+        get; set;
+    }
 
     [Header("Venue Navigation")]
     /// <summary>
@@ -41,15 +48,19 @@ public class Navigation : MonoBehaviour {
     private bool inVenue;
     private GameObject destination;
 
-    private bool atGoal;
-    private bool inQueue;
+    internal bool AtGoal {
+        get; set;
+    }
+    internal bool InQueue {
+        get; set;
+    }
 
     private NavMeshAgent agent;
 
     // Use this for initialization
     void Start() {
         locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
-        agentName = string.Format("Agent {0}", agentNumber.ToString("D3"));
+        AgentName = string.Format("Agent {0}", agentNumber.ToString("D3"));
         agentNumber++;
 
         inVenue = false;
@@ -58,8 +69,8 @@ public class Navigation : MonoBehaviour {
         eventOver = false;
         tripTimer = 0.0f;
         distractionTimer = 0.0f;
-        atGoal = false;
-        inQueue = false;
+        AtGoal = false;
+        InQueue = false;
 
         // FIXME this is unused
         goalTime = Random.Range(goalTimeMin, goalTimeMax);
@@ -78,8 +89,8 @@ public class Navigation : MonoBehaviour {
 
         if (eventOver && !leaving) {
             //Debug.Log ("Event over, leaving");
-            inQueue = false;
-            atGoal = false;
+            InQueue = false;
+            AtGoal = false;
             leaving = true;
             agent.destination = findNearestDestination().transform.position;
             agent.speed = speed;
@@ -112,36 +123,38 @@ public class Navigation : MonoBehaviour {
 
     // Checks agent's status booleans and updates its goals / destinations as required
     private void destinationUpdate() {
-        if (IsAtGoal()) {
+        if (AtGoal) {
             // TODO any logic here?
-        } else if (IsInQueue()) {
+        } else if (InQueue) {
             // TODO Check position in queue. Move if necessary. If at front of queue and queue
             // ready for next agent, move up
         } else if ((agent.destination - this.transform.position).sqrMagnitude < Mathf.Pow(destinationPadding, 2)) {
+            // If the squared distance between the agent's destination and the agent is less that the squared
+            // destination padding, then...
             if (agent.destination.x == endPos.x && agent.destination.y == endPos.y) {
                 //Stop moving if destination reached
             }
 
             // FIXME is this supposed to be an "else if"?
             if (!inVenue && !eventOver) {
-                Debug.Log(agentName + " entered venue. Finding new goal");
+                Debug.Log(AgentName + " entered venue. Finding new goal");
                 inVenue = true;
                 //find nearest destination in the building, at this point a goal should be sought out
                 //aka dancefloor, bar, seating, etc.
                 destination = findNearestDestination();
                 agent.destination = destination.transform.position;
             } else if (eventOver && inVenue) {
-                Debug.Log(agentName + " reached exit. Leaving the venue");
+                Debug.Log(AgentName + " reached exit. Leaving the venue");
                 inVenue = false;
                 destination = findNearestDestination();
                 agent.destination = destination.transform.position;
             } else if (inVenue) {
-                Debug.Log(agentName + " reached goal");
+                Debug.Log(AgentName + " reached goal");
                 destination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
-                atGoal = true;
+                AtGoal = true;
                 agent.speed = 0.0f;
             } else {
-                Debug.Log(agentName + " error in destinationUpdate(). Stopping.");
+                Debug.Log(AgentName + " error in destinationUpdate(). Stopping.");
                 agent.speed = 0.0f;
             }
         }
@@ -214,6 +227,7 @@ public class Navigation : MonoBehaviour {
         return nearest;
     }
 
+    // TODO Rename this...
     public void AgentOfDestruction() {
         agent.destination = calculateNearest(locationManager.GetLocations("Exit")).transform.position;
         ResumeAgentSpeed();
@@ -227,44 +241,14 @@ public class Navigation : MonoBehaviour {
     }
 
     /// <returns>true if the agent is outside the venue, otherwise false</returns>
-	public bool isOutside() {
+	public bool isOutside()
+    {
         return inVenue;
-    }
-
-    /// <summary>
-    /// Sets whether or not the agent has reached its goal
-    /// </summary>
-    /// <param name="value">true if agent has reached its goal, otherwise false</param>
-	public void AtGoal(bool value) {
-        atGoal = value;
-    }
-
-    /// <returns>true if the agent is at its goal, otherwise false</returns>
-	public bool IsAtGoal() {
-        return atGoal;
-    }
-
-    /// <summary>
-    /// Sets whether or not the agent is in a queue
-    /// </summary>
-    /// <param name="value">true if agent is in a queue, otherwise false</param>
-	public void InQueue(bool value) {
-        inQueue = value;
-    }
-
-    /// <returns>true if the agent is in a queue, otherwise false</returns>
-	public bool IsInQueue() {
-        return inQueue;
     }
 
     /// <returns>the destination of the agent</returns>
 	public GameObject GetDestination() {
         return destination;
-    }
-
-    /// <returns>the name of the agent</returns>
-    public string GetAgentName() {
-        return agentName;
     }
 
     // Resumes the agent's previous speed

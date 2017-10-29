@@ -62,20 +62,20 @@ public class QueueLogic : MonoBehaviour {
     /// </summary>
     public void Enqueue(GameObject agent) {
         Navigation newAgent = agent.GetComponent<Navigation>();
-        newAgent.InQueue(true);
+        newAgent.InQueue = true;
         queue.Add(agent);
 
         if (queue.Count == 0) {
             //TODO this should be accessed via an accessor, NOT a direct call
             agent.GetComponent<NavMeshAgent>().destination = this.transform.position;
-            newAgent.AtGoal(true);
+            newAgent.AtGoal = true;
 
-            Debug.Log(newAgent.GetAgentName() + " added to front of list and will be next served.");
+            Debug.Log(newAgent.AgentName + " added to front of list and will be next served.");
         } else {
             agent.GetComponent<NavMeshAgent>().destination = getLast();
-            newAgent.AtGoal(false);
+            newAgent.AtGoal = false;
             newAgent.StopAgent();
-            Debug.Log(newAgent.GetAgentName() + " added at position " + (queue.Count - 1) + " of list.");
+            Debug.Log(newAgent.AgentName + " added at position " + (queue.Count - 1) + " of list.");
         }
     }
 
@@ -85,14 +85,17 @@ public class QueueLogic : MonoBehaviour {
     /// </summary>
 	public void Dequeue() {
         Navigation finishedAgent = queue[0].GetComponent<Navigation>();
-        finishedAgent.AtGoal (false);
+        finishedAgent.AtGoal = false;
         finishedAgent.AgentOfDestruction();
 
         queue.RemoveAt (0);
         if (queue.Count > 0) {
-            //queue[0].GetComponent<Navigation>().AtGoal(true);
+            queue[0].GetComponent<Navigation>().AtGoal = true;
             queue[0].GetComponent<NavMeshAgent>().destination = this.transform.position;
-            queue[0].GetComponent<Navigation>().ResumeAgentSpeed();
+            foreach (GameObject agent in queue) {
+                agent.GetComponent<Navigation>().ResumeAgentSpeed();
+            }
+            
         }
 	}
 
