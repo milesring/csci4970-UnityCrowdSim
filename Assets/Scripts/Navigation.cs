@@ -124,10 +124,10 @@ public class Navigation : MonoBehaviour {
 
     // Checks agent's status booleans and updates its goals / destinations as required
     private void destinationUpdate() {
-        if (InQueue && AtGoal) {
+        if (AtGoal) {
             // TODO any logic here
             // Agent being worked with
-        } else if (InQueue && !AtGoal) {
+        } else if (InQueue) {
             // Agent waiting in queue
 
             // TODO Check position in queue. Move if necessary. If at front of queue and queue
@@ -155,7 +155,10 @@ public class Navigation : MonoBehaviour {
                 agent.destination = destination.transform.position;
             } else if (inVenue) {
                 Debug.Log(AgentName + " reached goal.");
-                destination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
+                if (!InQueue) {
+                    destination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
+                }
+
                 AtGoal = true;
                 agent.speed = 0.0f;
             } else {

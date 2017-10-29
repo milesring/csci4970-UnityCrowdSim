@@ -6,7 +6,9 @@ using UnityEngine;
 /// Destroys agents when they come in contact with the parent object's collider
 /// </summary>
 public class AgentDestroyer : MonoBehaviour {
-	EventManager eventManager;
+    public bool alwaysDestroy;
+
+    EventManager eventManager;
 	AgentManager agentManager;
 
 	void Start(){
@@ -14,11 +16,16 @@ public class AgentDestroyer : MonoBehaviour {
 		agentManager = GameObject.Find ("AgentManager").GetComponent<AgentManager> ();
 	}
 	void OnTriggerEnter(Collider other){
-		//Debug.Log ("Collider entered. event over= "+eventManager.eventOver());
-		//Debug.Log("Compare: "+other.gameObject.CompareTag("Agent"));
-		if(eventManager.eventOver() && other.gameObject.CompareTag("Agent")){
-			Destroy (other.gameObject);
-			agentManager.agentDestroyed ();
-		}
+        //Debug.Log ("Collider entered. event over= "+eventManager.eventOver());
+        //Debug.Log("Compare: "+other.gameObject.CompareTag("Agent"));
+        if (other.gameObject.CompareTag("Agent")) {
+            if (alwaysDestroy) {
+                Destroy(other.gameObject);
+                agentManager.agentDestroyed();
+            } else if (eventManager.eventOver()) {
+                Destroy(other.gameObject);
+                agentManager.agentDestroyed();
+            }
+        }
 	}
 }

@@ -18,28 +18,29 @@ public class AgentCollider : MonoBehaviour {
 
 	}
 
-	void OnTriggerEnter(Collider other){
+	void OnTriggerEnter(Collider other) {
         Navigation thisAgent = this.gameObject.GetComponent<Navigation>();
-        Navigation otherAgent = other.gameObject.GetComponent<Navigation>();
-        /*
-         * If the colliding object is an agent
-         * AND this object is not in a queue
-         * AND the colliding object is at its goal
-         * AND the colliding object's destination is the same as this object's destination
-         * THEN enqueue this object in the destination's queue
-         */
-        if (other.gameObject.CompareTag("Agent")
-            && !thisAgent.InQueue
-            && (otherAgent.AtGoal || otherAgent.InQueue)
-            && otherAgent.GetDestination()
-                == thisAgent.GetDestination()) {
-            Debug.Log(thisAgent.AgentName + " and " + otherAgent.AgentName
-                + " have same goal. Adding agent " + thisAgent.AgentName + " in queue behind " 
-                + otherAgent.AgentName);
+        if (thisAgent.AtGoal) {
+            // This agent is already at its goal and does not care about collisions
+        } else if (other.gameObject.CompareTag("Agent")) {
+            Navigation otherAgent = other.gameObject.GetComponent<Navigation>();
 
-            this.gameObject.GetComponent<Navigation>().GetDestination()
-                .GetComponent<QueueLogic>().Enqueue(this.gameObject);
+            /*
+             * If the colliding object is an agent
+             * AND this object is not already in a queue
+             * AND the colliding object is at its goal OR is in a queue
+             * AND the colliding object's destination is the same as this object's destination
+             * THEN enqueue this object in the destination's queue
+             */
+            if (!thisAgent.InQueue
+                   && (otherAgent.AtGoal || otherAgent.InQueue)
+                   && otherAgent.GetDestination() == thisAgent.GetDestination()) {
+                Debug.Log(thisAgent.AgentName + " and " + otherAgent.AgentName
+                    + " have same goal. Adding agent " + thisAgent.AgentName + " in queue behind "
+                    + otherAgent.AgentName);
 
+                thisAgent.GetDestination().GetComponent<QueueLogic>().Enqueue(this.gameObject);
+            }
         }
 	}
 }

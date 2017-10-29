@@ -14,6 +14,7 @@ public class QueueLogic : MonoBehaviour {
     public string queueName;
 
     List<GameObject> queue;
+    GameObject currentAgent;
 	bool busy;
 
     /// How long it takes for the agent at front of queue to complete its task.
@@ -43,7 +44,7 @@ public class QueueLogic : MonoBehaviour {
         }
 
         // We have possibly finished with an agent above- check again if the queue is busy
-        if (!busy && queue.Count > 0) {
+        if (!busy && currentAgent != null) {
             busy = true;
 		}
 	}
@@ -62,19 +63,24 @@ public class QueueLogic : MonoBehaviour {
     /// </summary>
     public void Enqueue(GameObject agent) {
         Navigation newAgent = agent.GetComponent<Navigation>();
-        newAgent.InQueue = true;
-        queue.Add(agent);
 
-        if (queue.Count == 0) {
-            agent.GetComponent<NavMeshAgent>().destination = this.transform.position;
-            //newAgent.AtGoal = true;
-
-            Debug.Log(newAgent.AgentName + " added to front of list and will be next served.");
+        // Check if the passed agent is already accounted for
+        if (currentAgent != null && newAgent.AgentName == currentAgent.GetComponent<Navigation>().AgentName) {
+            //Do nothing, agent already acounted for
         } else {
-            agent.GetComponent<NavMeshAgent>().destination = getLast();
-            // newAgent.AtGoal = false;
-            newAgent.StopAgent();
-            Debug.Log(newAgent.AgentName + " added at position " + (queue.Count - 1) + " of list.");
+            if (queue.Count == 0 && !busy) {
+                currentAgent = agent;
+                currentAgent.GetComponent<NavMeshAgent>().destination = this.transform.position;
+                busy = true;
+
+                Debug.Log(newAgent.AgentName + " is being served at front of queue " + queueName);
+            } else {
+                newAgent.InQueue = true;
+                //agent.GetComponent<NavMeshAgent>().destination = getLast();
+                newAgent.StopAgent();
+                queue.Add(agent);
+                Debug.Log(newAgent.AgentName + " added at position " + (queue.Count - 1) + " of list.");
+            }
         }
     }
 
@@ -83,19 +89,23 @@ public class QueueLogic : MonoBehaviour {
     /// Remove the agent at the front of the queue
     /// </summary>
 	public void Dequeue() {
-        Navigation finishedAgent = queue[0].GetComponent<Navigation>();
-        finishedAgent.AtGoal = false;
-        // TODO Testing purposes only- remove for other scenes
+        Navigation finishedAgent = currentAgent.GetComponent<Navigation>();
+        // TODO Testing purposes only- remove for other scenes. Don't like modifying agent goal from here
         finishedAgent.AgentOfDestruction();
+        finishedAgent.AtGoal = false;
+        currentAgent = null;
 
-        queue.RemoveAt (0);
         if (queue.Count > 0) {
-            queue[0].GetComponent<Navigation>().AtGoal = true;
-            queue[0].GetComponent<NavMeshAgent>().destination = this.transform.position;
+            currentAgent = queue[0];
+            currentAgent.GetComponent<NavMeshAgent>().destination = this.transform.position;
+            currentAgent.GetComponent<Navigation>().ResumeAgentSpeed();
+            currentAgent.GetComponent<Navigation>().InQueue = false;
+            queue.RemoveAt(0);
+
             foreach (GameObject agent in queue) {
+                // Tell remaining queued agent to move forward in line
                 agent.GetComponent<Navigation>().ResumeAgentSpeed();
             }
-            
         }
 	}
 
