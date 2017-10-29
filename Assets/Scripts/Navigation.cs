@@ -59,9 +59,10 @@ public class Navigation : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
         AgentName = string.Format("Agent {0}", agentNumber.ToString("D3"));
         agentNumber++;
+
+        locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
 
         inVenue = false;
         distracted = false;
@@ -123,33 +124,37 @@ public class Navigation : MonoBehaviour {
 
     // Checks agent's status booleans and updates its goals / destinations as required
     private void destinationUpdate() {
-        if (AtGoal) {
-            // TODO any logic here?
-        } else if (InQueue) {
+        if (InQueue && AtGoal) {
+            // TODO any logic here
+            // Agent being worked with
+        } else if (InQueue && !AtGoal) {
+            // Agent waiting in queue
+
             // TODO Check position in queue. Move if necessary. If at front of queue and queue
             // ready for next agent, move up
         } else if ((agent.destination - this.transform.position).sqrMagnitude < Mathf.Pow(destinationPadding, 2)) {
             // If the squared distance between the agent's destination and the agent is less that the squared
             // destination padding, then...
             if (agent.destination.x == endPos.x && agent.destination.y == endPos.y) {
-                //Stop moving if destination reached
+                // TODO This is unlikely to ever happen, check may be removed in future revisions
+                Debug.Log("Agent " + AgentName + " has touched its destination.");
             }
 
-            // FIXME is this supposed to be an "else if"?
             if (!inVenue && !eventOver) {
-                Debug.Log(AgentName + " entered venue. Finding new goal");
+                Debug.Log(AgentName + " entered venue. Finding new goal.");
                 inVenue = true;
                 //find nearest destination in the building, at this point a goal should be sought out
                 //aka dancefloor, bar, seating, etc.
                 destination = findNearestDestination();
                 agent.destination = destination.transform.position;
             } else if (eventOver && inVenue) {
-                Debug.Log(AgentName + " reached exit. Leaving the venue");
+                // If the event is over and we are in the venue, our only destinations are exits.
+                Debug.Log(AgentName + " reached exit. Leaving the venue.");
                 inVenue = false;
                 destination = findNearestDestination();
                 agent.destination = destination.transform.position;
             } else if (inVenue) {
-                Debug.Log(AgentName + " reached goal");
+                Debug.Log(AgentName + " reached goal.");
                 destination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
                 AtGoal = true;
                 agent.speed = 0.0f;

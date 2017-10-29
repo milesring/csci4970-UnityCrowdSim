@@ -66,14 +66,13 @@ public class QueueLogic : MonoBehaviour {
         queue.Add(agent);
 
         if (queue.Count == 0) {
-            //TODO this should be accessed via an accessor, NOT a direct call
             agent.GetComponent<NavMeshAgent>().destination = this.transform.position;
-            newAgent.AtGoal = true;
+            //newAgent.AtGoal = true;
 
             Debug.Log(newAgent.AgentName + " added to front of list and will be next served.");
         } else {
             agent.GetComponent<NavMeshAgent>().destination = getLast();
-            newAgent.AtGoal = false;
+            // newAgent.AtGoal = false;
             newAgent.StopAgent();
             Debug.Log(newAgent.AgentName + " added at position " + (queue.Count - 1) + " of list.");
         }
@@ -86,6 +85,7 @@ public class QueueLogic : MonoBehaviour {
 	public void Dequeue() {
         Navigation finishedAgent = queue[0].GetComponent<Navigation>();
         finishedAgent.AtGoal = false;
+        // TODO Testing purposes only- remove for other scenes
         finishedAgent.AgentOfDestruction();
 
         queue.RemoveAt (0);
