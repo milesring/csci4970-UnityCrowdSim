@@ -43,15 +43,26 @@ public class Navigation : MonoBehaviour {
     private float distractionTimer;
 
     private Vector3 endPos;
-    private Vector3 lastDestination;
+    internal Vector3 GoalDestination {
+        get; set;
+    }
+
     private float speed;
     private bool inVenue;
     private GameObject destination;
 
+    // true if the agent is at its goal
     internal bool AtGoal {
         get; set;
     }
+
+    // true is agent is in a queue
     internal bool InQueue {
+        get; set;
+    }
+
+    // true if agent is being served at front of queue
+    internal bool BeingServed {
         get; set;
     }
 
@@ -111,7 +122,7 @@ public class Navigation : MonoBehaviour {
 
         if (distractionTimer > distractionTime) {
             //restore last goal for agent
-            agent.destination = lastDestination;
+            agent.destination = GoalDestination;
             distracted = false;
 
             //resume speed
@@ -178,7 +189,7 @@ public class Navigation : MonoBehaviour {
         distracted = true;
 
         //save last destination
-        lastDestination = NavMeshAgent.destination;
+        GoalDestination = NavMeshAgent.destination;
     }
 
     // Based on this agent's status booleans, find an appropriate destination
@@ -259,6 +270,15 @@ public class Navigation : MonoBehaviour {
         return destination;
     }
 
+    internal void SetDestination(Vector3 destination, bool saveCurrentDestination) {
+        NavMeshAgent navMeshAgent = this.GetComponent<NavMeshAgent>();
+        if (saveCurrentDestination) {
+            GoalDestination = navMeshAgent.destination;
+        }
+
+        navMeshAgent.destination = destination;
+    }
+
     // Resumes the agent's previous speed
     internal void ResumeAgentSpeed() {
         agent.speed = speed;
@@ -266,7 +286,6 @@ public class Navigation : MonoBehaviour {
 
     // Saves the agent's current speed, then sets the agent's speed to 0.
     internal void StopAgent() {
-        speed = agent.speed;
         agent.speed = 0.0f;
     }
 

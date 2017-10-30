@@ -22,19 +22,21 @@ public class AgentCollider : MonoBehaviour {
         Navigation thisAgent = this.gameObject.GetComponent<Navigation>();
         if (thisAgent.AtGoal) {
             // This agent is already at its goal and does not care about collisions
+        } else if (thisAgent.BeingServed) {
+            // This agent is being served and does not care about collisions
         } else if (other.gameObject.CompareTag("Agent")) {
+            // If the colliding object is an agent
             Navigation otherAgent = other.gameObject.GetComponent<Navigation>();
 
-            /*
-             * If the colliding object is an agent
-             * AND this object is not already in a queue
-             * AND the colliding object is at its goal OR is in a queue
-             * AND the colliding object's destination is the same as this object's destination
-             * THEN enqueue this object in the destination's queue
-             */
-            if (!thisAgent.InQueue
-                   && (otherAgent.AtGoal || otherAgent.InQueue)
-                   && otherAgent.GetDestination() == thisAgent.GetDestination()) {
+            if (thisAgent.InQueue) {
+                // If this agent is already in a queue and we collide with another agent, stop
+                thisAgent.StopAgent();
+            } else if ((otherAgent.AtGoal || otherAgent.BeingServed || otherAgent.InQueue)
+                   //&& otherAgent.GoalDestination == thisAgent.GoalDestination) {
+                   && Vector3.Distance(otherAgent.GoalDestination, thisAgent.GoalDestination) == 0.0f) {
+            
+                // If this agent is not in a queue and we collide with an agent that is at its goal or in a
+                // queue for its goal AND this agent's destination is the same, queue this agent
                 Debug.Log(thisAgent.AgentName + " and " + otherAgent.AgentName
                     + " have same goal. Adding agent " + thisAgent.AgentName + " in queue behind "
                     + otherAgent.AgentName);

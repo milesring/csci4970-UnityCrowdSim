@@ -57,49 +57,58 @@ public class QueueLogic : MonoBehaviour {
     }
 
     /// <summary>
-    /// TODO An agent at the front of the queue IS in the queue still. `InQueue(false)` should
-    ///     only be called from Dequeue
     /// Add agent to end of the FIFO list
     /// </summary>
     public void Enqueue(GameObject agent) {
         Navigation newAgent = agent.GetComponent<Navigation>();
 
-        // Check if the passed agent is already accounted for
-        if (currentAgent != null && newAgent.AgentName == currentAgent.GetComponent<Navigation>().AgentName) {
-            //Do nothing, agent already acounted for
+        //if (currentAgent != null && newAgent.AgentName == currentAgent.GetComponent<Navigation>().AgentName) {
+        if (currentAgent == agent) {
+            //Do nothing, agent already accounted for
+            Debug.Log("Invalid enqueue command");
         } else {
             if (queue.Count == 0 && !busy) {
                 currentAgent = agent;
-                currentAgent.GetComponent<NavMeshAgent>().destination = this.transform.position;
+                newAgent.SetDestination(this.transform.position, false);
+                newAgent.BeingServed = true;
                 busy = true;
 
                 Debug.Log(newAgent.AgentName + " is being served at front of queue " + queueName);
             } else {
                 newAgent.InQueue = true;
-                //agent.GetComponent<NavMeshAgent>().destination = getLast();
                 newAgent.StopAgent();
                 queue.Add(agent);
+                
+                if (queue.Count == 1) {
+                    // Position new agent behind the agent being served;
+                    newAgent.SetDestination(currentAgent.transform.position, true);
+                } else {
+                    // Position new agent behind the last agent in queue
+                    newAgent.SetDestination(getLast(), true);
+                }
+                
                 Debug.Log(newAgent.AgentName + " added at position " + (queue.Count - 1) + " of list.");
             }
         }
     }
 
-    /// <summary>
-    /// TODO Does this need to be public? Other elements should not be able to dequeue agents
-    /// Remove the agent at the front of the queue
-    /// </summary>
-	public void Dequeue() {
+    // Remove the agent at the front of the queue
+	private void Dequeue() {
         Navigation finishedAgent = currentAgent.GetComponent<Navigation>();
         // TODO Testing purposes only- remove for other scenes. Don't like modifying agent goal from here
         finishedAgent.AgentOfDestruction();
         finishedAgent.AtGoal = false;
+        finishedAgent.BeingServed = false;
         currentAgent = null;
 
         if (queue.Count > 0) {
             currentAgent = queue[0];
-            currentAgent.GetComponent<NavMeshAgent>().destination = this.transform.position;
-            currentAgent.GetComponent<Navigation>().ResumeAgentSpeed();
-            currentAgent.GetComponent<Navigation>().InQueue = false;
+            Navigation currentAgentNav = currentAgent.GetComponent<Navigation>();
+            Debug.Log("Pulling agent " + currentAgentNav.AgentName + " to be served at front of queue.");
+            currentAgentNav.SetDestination(this.transform.position, false);
+            currentAgentNav.ResumeAgentSpeed();
+            currentAgentNav.BeingServed = true;
+            currentAgentNav.InQueue = false;
             queue.RemoveAt(0);
 
             foreach (GameObject agent in queue) {
@@ -119,6 +128,6 @@ public class QueueLogic : MonoBehaviour {
 
 	//Returns position of last agent in line
 	Vector3 getLast(){
-		return queue [queue.Count-1].transform.position;
+		return queue[queue.Count-1].transform.position;
 	}
 }
