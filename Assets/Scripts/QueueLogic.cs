@@ -65,11 +65,11 @@ public class QueueLogic : MonoBehaviour {
         //if (currentAgent != null && newAgent.AgentName == currentAgent.GetComponent<Navigation>().AgentName) {
         if (currentAgent == agent) {
             //Do nothing, agent already accounted for
-            Debug.Log("Invalid enqueue command");
+            Debug.Log(string.Format("Invalid enqueue command- agent {0} already in queue.", newAgent.AgentName));
         } else {
             if (queue.Count == 0 && !busy) {
                 currentAgent = agent;
-                newAgent.SetDestination(this.transform.position, false);
+                newAgent.SetNavigationDestination(this.transform.position, false);
                 newAgent.BeingServed = true;
                 busy = true;
 
@@ -81,10 +81,10 @@ public class QueueLogic : MonoBehaviour {
                 
                 if (queue.Count == 1) {
                     // Position new agent behind the agent being served;
-                    newAgent.SetDestination(currentAgent.transform.position, true);
+                    newAgent.SetNavigationDestination(currentAgent.transform.position, true);
                 } else {
                     // Position new agent behind the last agent in queue
-                    newAgent.SetDestination(getLast(), true);
+                    newAgent.SetNavigationDestination(getLast(), true);
                 }
                 
                 Debug.Log(newAgent.AgentName + " added at position " + (queue.Count - 1) + " of list.");
@@ -105,7 +105,8 @@ public class QueueLogic : MonoBehaviour {
             currentAgent = queue[0];
             Navigation currentAgentNav = currentAgent.GetComponent<Navigation>();
             Debug.Log("Pulling agent " + currentAgentNav.AgentName + " to be served at front of queue.");
-            currentAgentNav.SetDestination(this.transform.position, false);
+            currentAgentNav.SetNavigationDestination(this.transform.position, false);
+            
             currentAgentNav.ResumeAgentSpeed();
             currentAgentNav.BeingServed = true;
             currentAgentNav.InQueue = false;

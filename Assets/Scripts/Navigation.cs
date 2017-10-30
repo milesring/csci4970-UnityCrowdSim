@@ -43,13 +43,13 @@ public class Navigation : MonoBehaviour {
     private float distractionTimer;
 
     private Vector3 endPos;
-    internal Vector3 GoalDestination {
+    internal Vector3 NavigationDestination {
         get; set;
     }
 
     private float speed;
     private bool inVenue;
-    private GameObject destination;
+    private GameObject GoalDestination;
 
     // true if the agent is at its goal
     internal bool AtGoal {
@@ -122,7 +122,7 @@ public class Navigation : MonoBehaviour {
 
         if (distractionTimer > distractionTime) {
             //restore last goal for agent
-            agent.destination = GoalDestination;
+            agent.destination = NavigationDestination;
             distracted = false;
 
             //resume speed
@@ -156,18 +156,18 @@ public class Navigation : MonoBehaviour {
                 inVenue = true;
                 //find nearest destination in the building, at this point a goal should be sought out
                 //aka dancefloor, bar, seating, etc.
-                destination = findNearestDestination();
-                agent.destination = destination.transform.position;
+                GoalDestination = findNearestDestination();
+                agent.destination = GoalDestination.transform.position;
             } else if (eventOver && inVenue) {
                 // If the event is over and we are in the venue, our only destinations are exits.
                 Debug.Log(AgentName + " reached exit. Leaving the venue.");
                 inVenue = false;
-                destination = findNearestDestination();
-                agent.destination = destination.transform.position;
+                GoalDestination = findNearestDestination();
+                agent.destination = GoalDestination.transform.position;
             } else if (inVenue) {
                 Debug.Log(AgentName + " reached goal.");
                 if (!InQueue) {
-                    destination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
+                    GoalDestination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
                 }
 
                 AtGoal = true;
@@ -189,7 +189,7 @@ public class Navigation : MonoBehaviour {
         distracted = true;
 
         //save last destination
-        GoalDestination = NavMeshAgent.destination;
+        NavigationDestination = NavMeshAgent.destination;
     }
 
     // Based on this agent's status booleans, find an appropriate destination
@@ -267,15 +267,15 @@ public class Navigation : MonoBehaviour {
 
     /// <returns>the destination of the agent</returns>
 	public GameObject GetDestination() {
-        return destination;
+        return GoalDestination;
     }
 
-    internal void SetDestination(Vector3 destination, bool saveCurrentDestination) {
+    internal void SetNavigationDestination(Vector3 destination, bool saveCurrentDestination) {
         NavMeshAgent navMeshAgent = this.GetComponent<NavMeshAgent>();
         if (saveCurrentDestination) {
-            GoalDestination = navMeshAgent.destination;
+            NavigationDestination = navMeshAgent.destination;
         }
-
+        
         navMeshAgent.destination = destination;
     }
 
