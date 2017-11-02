@@ -279,14 +279,25 @@ public class Navigation : MonoBehaviour {
         navMeshAgent.destination = destination;
     }
 
+    internal void UpdateLookRotation() {
+        agent.updateRotation = false;
+        Vector3 targetDir = NavigationDestination - this.transform.position;
+        float step = speed * Time.deltaTime;
+        Vector3 newDir = Vector3.RotateTowards(this.transform.forward, targetDir, step, 0.0f);
+        Debug.DrawRay(this.transform.position, newDir, Color.red);
+        this.transform.rotation = Quaternion.LookRotation(newDir);
+    }
+
     // Resumes the agent's previous speed
     internal void ResumeAgentSpeed() {
         agent.speed = speed;
+        agent.updateRotation = true;
     }
 
     // Saves the agent's current speed, then sets the agent's speed to 0.
     internal void StopAgent() {
         agent.speed = 0.0f;
+        agent.updateRotation = false;
     }
 
     /// <summary>

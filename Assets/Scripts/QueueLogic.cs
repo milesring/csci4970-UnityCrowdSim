@@ -6,6 +6,7 @@ using UnityEngine;
 /// <summary>
 /// This class encapsulates the logic of the queue itself. Its main function is to hold agents in
 /// a FIFO list and slowly dequeue agents from the front of the queue.
+/// TODO possibly alter interest level based on how many agents currently in queue
 /// </summary>
 public class QueueLogic : MonoBehaviour {
     /// <summary>
@@ -47,6 +48,10 @@ public class QueueLogic : MonoBehaviour {
         if (!busy && currentAgent != null) {
             busy = true;
 		}
+
+        foreach (GameObject agent in queue) {
+            agent.GetComponent<Navigation>().UpdateLookRotation();
+        }
 	}
 
     private void FinishWork() {
@@ -82,9 +87,11 @@ public class QueueLogic : MonoBehaviour {
                 if (queue.Count == 1) {
                     // Position new agent behind the agent being served;
                     newAgent.SetNavigationDestination(currentAgent.transform.position, true);
+                    //newAgent.SetLookAt(this.transform);
                 } else {
                     // Position new agent behind the last agent in queue
                     newAgent.SetNavigationDestination(getLast(), true);
+                    //newAgent.SetLookAt(queue[queue.Count - 1].transform);
                 }
                 
                 Debug.Log(newAgent.AgentName + " added at position " + (queue.Count - 1) + " of list.");
@@ -93,7 +100,8 @@ public class QueueLogic : MonoBehaviour {
     }
 
     // Remove the agent at the front of the queue
-	private void Dequeue() {
+    private void Dequeue()
+    {
         Navigation finishedAgent = currentAgent.GetComponent<Navigation>();
         // TODO Testing purposes only- remove for other scenes. Don't like modifying agent goal from here
         finishedAgent.AgentOfDestruction();
@@ -106,26 +114,24 @@ public class QueueLogic : MonoBehaviour {
             Navigation currentAgentNav = currentAgent.GetComponent<Navigation>();
             Debug.Log("Pulling agent " + currentAgentNav.AgentName + " to be served at front of queue.");
             currentAgentNav.SetNavigationDestination(this.transform.position, false);
-            
+            //currentAgentNav.transform.LookAt(this.transform);
             currentAgentNav.ResumeAgentSpeed();
             currentAgentNav.BeingServed = true;
             currentAgentNav.InQueue = false;
             queue.RemoveAt(0);
 
-            foreach (GameObject agent in queue) {
+            //foreach (GameObject agent in queue) {
+            for (int i = 0; i < queue.Count; i++) {
+
                 // Tell remaining queued agent to move forward in line
+                GameObject agent = queue[i];
+                Navigation agentNav = agent.GetComponent<Navigation>();
+                Debug.Log("Queue ordering " + agentNav.AgentName + " to move and face goal");
                 agent.GetComponent<Navigation>().ResumeAgentSpeed();
+                //agent.GetComponent<Navigation>().transform.LookAt(agent.GetComponent<Navigation>().NavigationDestination);
             }
         }
-	}
-
-	/// <summary>
-    /// Returns number of agents in queue
-	/// TODO possibly alter interest level based on how many agents currently in queue
-    /// </summary>
-	public int Length(){
-		return queue.Count;
-	}
+    }
 
 	//Returns position of last agent in line
 	Vector3 getLast(){
