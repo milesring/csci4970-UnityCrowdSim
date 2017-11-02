@@ -36,10 +36,6 @@ public class QueueLogic : MonoBehaviour {
         if (busy) {
             queueWorkTime += Time.deltaTime;
             if (queueWorkTime >= maxQueueWorkTime) {
-                // TODO Agent is complete with work. Dequeue agent (issue command to continue
-                // to goal) and signal the queue is ready for another agent (either send signal
-                // to agent in front of queue, or make `busy` public and have agents check the bool.
-                // The latter is the preferred approach so that all agents in queue know to move?)
                 FinishWork();
             }
         }
@@ -67,31 +63,28 @@ public class QueueLogic : MonoBehaviour {
     public void Enqueue(GameObject agent) {
         Navigation newAgent = agent.GetComponent<Navigation>();
 
-        //if (currentAgent != null && newAgent.AgentName == currentAgent.GetComponent<Navigation>().AgentName) {
         if (currentAgent == agent) {
             //Do nothing, agent already accounted for
             Debug.Log(string.Format("Invalid enqueue command- agent {0} already in queue.", newAgent.AgentName));
         } else {
             if (queue.Count == 0 && !busy) {
                 currentAgent = agent;
-                newAgent.SetNavigationDestination(this.transform.position, false);
+                newAgent.SetDestination(this.transform.position, false);
                 newAgent.BeingServed = true;
                 busy = true;
 
                 Debug.Log(newAgent.AgentName + " is being served at front of queue " + queueName);
             } else {
-                newAgent.InQueue = true;
+                newAgent.setInQueue(true);
                 newAgent.StopAgent();
                 queue.Add(agent);
                 
                 if (queue.Count == 1) {
                     // Position new agent behind the agent being served;
-                    newAgent.SetNavigationDestination(currentAgent.transform.position, true);
-                    //newAgent.SetLookAt(this.transform);
+                    newAgent.SetDestination(currentAgent.transform.position, true);
                 } else {
                     // Position new agent behind the last agent in queue
-                    newAgent.SetNavigationDestination(getLast(), true);
-                    //newAgent.SetLookAt(queue[queue.Count - 1].transform);
+                    newAgent.SetDestination(getLast(), true);
                 }
                 
                 Debug.Log(newAgent.AgentName + " added at position " + (queue.Count - 1) + " of list.");
@@ -113,22 +106,18 @@ public class QueueLogic : MonoBehaviour {
             currentAgent = queue[0];
             Navigation currentAgentNav = currentAgent.GetComponent<Navigation>();
             Debug.Log("Pulling agent " + currentAgentNav.AgentName + " to be served at front of queue.");
-            currentAgentNav.SetNavigationDestination(this.transform.position, false);
-            //currentAgentNav.transform.LookAt(this.transform);
+
+            currentAgentNav.SetDestination(this.transform.position, false);
             currentAgentNav.ResumeAgentSpeed();
             currentAgentNav.BeingServed = true;
-            currentAgentNav.InQueue = false;
+            currentAgentNav.setInQueue(false);
             queue.RemoveAt(0);
 
-            //foreach (GameObject agent in queue) {
-            for (int i = 0; i < queue.Count; i++) {
-
-                // Tell remaining queued agent to move forward in line
-                GameObject agent = queue[i];
+            foreach (GameObject agent in queue) { 
+                // Tell remaining queued agent to move forward in 
                 Navigation agentNav = agent.GetComponent<Navigation>();
                 Debug.Log("Queue ordering " + agentNav.AgentName + " to move and face goal");
                 agent.GetComponent<Navigation>().ResumeAgentSpeed();
-                //agent.GetComponent<Navigation>().transform.LookAt(agent.GetComponent<Navigation>().NavigationDestination);
             }
         }
     }

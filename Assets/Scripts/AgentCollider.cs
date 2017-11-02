@@ -30,11 +30,11 @@ public class AgentCollider : MonoBehaviour {
             // If the colliding object is an agent
             Navigation otherAgent = other.gameObject.GetComponent<Navigation>();
 
-            if (thisAgent.InQueue) {
+            if (thisAgent.isInQueue()) {
                 Debug.Log(thisAgent.AgentName + " is already in queue! Stopping agent.");
                 // If this agent is already in a queue and we collide with another agent, stop
                 thisAgent.StopAgent();
-            } else if ((otherAgent.AtGoal || otherAgent.BeingServed || otherAgent.InQueue)
+            } else if ((otherAgent.AtGoal || otherAgent.BeingServed || otherAgent.isInQueue())
                    && otherAgent.GetDestination() == thisAgent.GetDestination()) {
             
                 // If this agent is not in a queue and we collide with an agent that is at its goal or in a

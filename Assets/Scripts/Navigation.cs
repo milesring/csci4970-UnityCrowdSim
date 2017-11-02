@@ -43,6 +43,8 @@ public class Navigation : MonoBehaviour {
     private float distractionTimer;
 
     private Vector3 endPos;
+    // This variable stores what the agent's end-goal is. This is required as the NavMeshAgent's
+    // destination sometimes needs to change while its end-goal is the same.
     internal Vector3 NavigationDestination {
         get; set;
     }
@@ -57,8 +59,17 @@ public class Navigation : MonoBehaviour {
     }
 
     // true is agent is in a queue
-    internal bool InQueue {
-        get; set;
+    private bool InQueue;
+
+    public void setInQueue(bool isInQueue)
+    {
+        agent.updateRotation = isInQueue ? false : true;
+        InQueue = isInQueue;
+
+    }
+    public bool isInQueue()
+    {
+        return InQueue;
     }
 
     // true if agent is being served at front of queue
@@ -270,7 +281,7 @@ public class Navigation : MonoBehaviour {
         return GoalDestination;
     }
 
-    internal void SetNavigationDestination(Vector3 destination, bool saveCurrentDestination) {
+    internal void SetDestination(Vector3 destination, bool saveCurrentDestination) {
         NavMeshAgent navMeshAgent = this.GetComponent<NavMeshAgent>();
         if (saveCurrentDestination) {
             NavigationDestination = navMeshAgent.destination;
@@ -279,25 +290,30 @@ public class Navigation : MonoBehaviour {
         navMeshAgent.destination = destination;
     }
 
+    internal Vector3 GetNavMeshAgentDestination() {
+        return this.GetComponent<NavMeshAgent>().destination;
+    }
+
     internal void UpdateLookRotation() {
-        agent.updateRotation = false;
-        Vector3 targetDir = NavigationDestination - this.transform.position;
+        Vector3 targetDir = (NavigationDestination - this.transform.position).normalized;
         float step = speed * Time.deltaTime;
-        Vector3 newDir = Vector3.RotateTowards(this.transform.forward, targetDir, step, 0.0f);
+        Vector3 newDir = Vector3.RotateTowards(this.transform.forward, targetDir, step, 10.0f);
         Debug.DrawRay(this.transform.position, newDir, Color.red);
         this.transform.rotation = Quaternion.LookRotation(newDir);
     }
 
     // Resumes the agent's previous speed
     internal void ResumeAgentSpeed() {
+        
+        agent.isStopped = false;
         agent.speed = speed;
-        agent.updateRotation = true;
     }
 
     // Saves the agent's current speed, then sets the agent's speed to 0.
     internal void StopAgent() {
-        agent.speed = 0.0f;
-        agent.updateRotation = false;
+        agent.velocity = Vector3.zero;
+        agent.isStopped = true;
+        //agent.speed = 0.0f;
     }
 
     /// <summary>
