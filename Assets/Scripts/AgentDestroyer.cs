@@ -22,7 +22,7 @@ public class AgentDestroyer : MonoBehaviour {
             if (alwaysDestroy) {
                 Destroy(other.gameObject);
                 agentManager.agentDestroyed();
-            } else if (eventManager.eventOver()) {
+            } else if (eventManager.eventOver) {
                 Destroy(other.gameObject);
                 agentManager.agentDestroyed();
             }

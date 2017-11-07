@@ -116,7 +116,7 @@ public class Navigation : MonoBehaviour {
             AtGoal = false;
             leaving = true;
             agent.destination = findNearestDestination().transform.position;
-            agent.speed = speed;
+            // agent.speed = speed; Interferes with emergency button agent speed (in HUD)
         }
 
         if (distracted) {
