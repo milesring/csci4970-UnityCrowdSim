@@ -59,10 +59,7 @@ public class AgentManager : MonoBehaviour {
         {
             agents [i].GetComponent<Navigation> ().endEvent ();
             //Debug.Log ("Agent " + i + " notified of event ending");
-            if (emergency)
-            {
-                agents[i].GetComponent<NavMeshAgent>().speed *= emergencySpeedMulitplier;
-            }
+            if (emergency) agents[i].GetComponent<NavMeshAgent>().speed *= emergencySpeedMulitplier;
             eventManager.eventOver = true;
 		}
 

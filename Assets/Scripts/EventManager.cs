@@ -27,13 +27,11 @@ public class EventManager : MonoBehaviour {
 		}
 	}
 
-    public float getEventTimer()
-    {
+    public float getEventTimer() {
         return eventTimer;
     }
 
-    public float getEventTime()
-    {
+    public float getEventTime() {
         return eventTime;
     }
 

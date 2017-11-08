@@ -18,6 +18,8 @@ public class HUD : MonoBehaviour {
     private Button emergencyButton;
     [SerializeField]
     private Button resetButton;
+    [SerializeField]
+    private Vector2 patronCameraPosition;
 
     // access to manager functions
     AgentManager agentManager;
@@ -58,7 +60,7 @@ public class HUD : MonoBehaviour {
     /// </summary>
 	void povClick() {
 		switch(currentPOV) {
-		case "agent":                   // if agent view, change to topDown position
+		case "agent":                                       // if agent view, change to topDown position
 			currentPOV = "topDown";
                 Camera.main.transform.position = initialCamPos;
                 Camera.main.transform.rotation = initialCamRot;
@@ -68,12 +70,9 @@ public class HUD : MonoBehaviour {
                 //Camera.main.transform.rotation = new Quaternion(0.4f, 0.0f, 0.0f, 0.8f);
                 break;
 
-		case "topDown":                 // if topDown view, change to agent position
+		case "topDown":                                     // if topDown view, change to agent position
                 selectedAgent = GameObject.Find("CrowdAgent(Clone)");
-                if (selectedAgent)      // unless there is no agent in scene
-                {
-                    currentPOV = "agent";
-                }
+                if (selectedAgent) currentPOV = "agent";    // unless there is no agent in scene
             break;
 		}
 	}
@@ -116,7 +115,7 @@ public class HUD : MonoBehaviour {
         // have main camera follow an agent if currentPOV is set to agent view
         if (selectedAgent != null && currentPOV.Equals("agent"))
         {
-            Camera.main.transform.position = selectedAgent.transform.position - selectedAgent.transform.forward * 3 + selectedAgent.transform.up * 2;
+            Camera.main.transform.position = selectedAgent.transform.position - selectedAgent.transform.forward * patronCameraPosition.x + selectedAgent.transform.up * patronCameraPosition.y;
             Camera.main.transform.rotation = selectedAgent.transform.rotation;
         }
     }
