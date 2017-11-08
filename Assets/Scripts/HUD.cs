@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class HUD : MonoBehaviour {
 
 #region Private
+    // link to children of the HUD component
     [SerializeField]
 	private Text patronCountText;
     [SerializeField]
@@ -15,48 +17,58 @@ public class HUD : MonoBehaviour {
     [SerializeField]
     private Button emergencyButton;
     [SerializeField]
-    private Transform mainCameraTransform;
+    private Button resetButton;
 
-    private AgentManager agentManager;
-    private EventManager eventManager;
-	private string currentPOV = "topDown";
-	private readonly string PATRON_NUM_FORMAT = "Number of Patrons: {0}";
-    private readonly string EVENT_TIMER_FORMAT = "Event Time: {0:0.00}";
-    private readonly string EMERGENCY_TIMER_FORMAT = "Evacuation Time: {0:0.00}";
-    private GameObject selectedAgent;
-    private Vector3 initialCamPos;
-    private Quaternion initialCamRot;
-    private float emergencyTimer = 0f;
+    // access to manager functions
+    AgentManager agentManager;
+    EventManager eventManager;
+
+    // text formatters
+	readonly string PATRON_NUM_FORMAT = "Number of Patrons: {0}";
+    readonly string EVENT_TIMER_FORMAT = "Event Time: {0:0.00}";
+    readonly string EMERGENCY_TIMER_FORMAT = "Evacuation Time: {0:0.00}";
+    float emergencyTimer = 0f;      // timer to record evacuation time
+
+    // camera position variables
+    string currentPOV = "topDown";  // current camera mode
+    GameObject selectedAgent;       // agent selected for camera to follow 
+    Vector3 initialCamPos;          // holds main camera's initial position in scene view
+    Quaternion initialCamRot;       // holds main camera's initial rotation in scene view
 #endregion
 
     // Use this for initialization
     void Start () {
-		povButton.onClick.AddListener(POVClick);
-        emergencyButton.onClick.AddListener(EmergencyClick);
+        // button listeners
+		povButton.onClick.AddListener(povClick);
+        emergencyButton.onClick.AddListener(emergencyClick);
+        resetButton.onClick.AddListener(resetClick);
 
-        initialCamPos = mainCameraTransform.position;
-        initialCamRot = mainCameraTransform.rotation;
+        // hold main camera's position in scene view
+        initialCamPos = Camera.main.transform.position;
+        initialCamRot = Camera.main.transform.rotation;
 
+        // Find other external GameObjects
         agentManager = GameObject.Find("AgentManager").GetComponent<AgentManager>();
         eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
         selectedAgent = GameObject.Find("CrowdAgent(Clone)");
     }
 
     /// <summary>
-    /// How to toggle the camera when the Point of View button is clicked
+    /// This method determines how to toggle the camera when the 'Point of View' button is clicked
     /// </summary>
-	void POVClick() {
+	void povClick() {
 		switch(currentPOV) {
-		case "agent":                 // if agent view, change to topDown Position
+		case "agent":                   // if agent view, change to topDown position
 			currentPOV = "topDown";
                 Camera.main.transform.position = initialCamPos;
                 Camera.main.transform.rotation = initialCamRot;
+
                 // Hard-coded default position, but above code will allow wherever the main camera starts in scene view
                 //Camera.main.transform.position = new Vector3(19.3f, 28.1f, -27.7f);
                 //Camera.main.transform.rotation = new Quaternion(0.4f, 0.0f, 0.0f, 0.8f);
-
                 break;
-		case "topDown":                 // if topDown view, change to agent Position
+
+		case "topDown":                 // if topDown view, change to agent position
                 selectedAgent = GameObject.Find("CrowdAgent(Clone)");
                 if (selectedAgent)      // unless there is no agent in scene
                 {
@@ -69,10 +81,18 @@ public class HUD : MonoBehaviour {
     /// <summary>
     /// What to do when the emergency button is clicked. It notifies all agents that the event is over.
     /// </summary>
-    void EmergencyClick()
+    void emergencyClick()
     {
         agentManager.notifyAgents(true);
         emergencyButton.interactable = false;
+    }
+
+    /// <summary>
+    /// Currently broken. Can be used to reload the scene or load next/different scene if fixed.
+    /// </summary>
+    void resetClick()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
 	// Update is called once per frame
