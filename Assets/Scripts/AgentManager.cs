@@ -12,7 +12,6 @@ public class AgentManager : MonoBehaviour {
     /// The maximum number of agents allowed in the environment
     /// </summary>
 	public int agentAmount;
-    public float emergencySpeedMulitplier;
 	private int agentCount;
 	EventManager eventManager;
 
@@ -58,8 +57,9 @@ public class AgentManager : MonoBehaviour {
 		for (int i = 0; i < agents.Length; ++i)
         {
             agents [i].GetComponent<Navigation> ().endEvent ();
+            // speeds up by randomly by 1.5x minimum, 3x maximum
+            if (emergency) agents[i].GetComponent<NavMeshAgent>().speed *= (Random.value+1)*1.5f;
             //Debug.Log ("Agent " + i + " notified of event ending");
-            if (emergency) agents[i].GetComponent<NavMeshAgent>().speed *= emergencySpeedMulitplier;
             eventManager.eventOver = true;
 		}
 
