@@ -12,12 +12,12 @@ public class AgentManager : MonoBehaviour {
     /// </summary>
 	public int agentAmount;
 	private int agentCount;
-	EventManager eventManager;
+	SimpleEventManager eventManager;
 
 	// Use this for initialization
 	void Start () {
 		agentCount = 0;
-		eventManager = GameObject.Find ("EventManager").GetComponent<EventManager> ();
+		eventManager = GameObject.Find ("SimpleEventManager").GetComponent<SimpleEventManager> ();
 	}
 	
 	// Update is called once per frame
@@ -54,7 +54,9 @@ public class AgentManager : MonoBehaviour {
 	public void notifyAgents(){
 		GameObject[] agents = GameObject.FindGameObjectsWithTag ("Agent");
 		for (int i = 0; i < agents.Length; ++i) {
-			agents [i].GetComponent<Navigation> ().endEvent ();
+			//agents [i].GetComponent<Navigation> ().endEvent ();
+			agents[i].GetComponent<SimpleNavigation1>().ExternalUpdateEvent(Status.EventOver);
+			agents [i].GetComponent<SimpleNavigation1> ().ExternalUpdateAction (Actions.FindingExits);
 			//Debug.Log ("Agent " + i + " notified of event ending");
 		}
 	}

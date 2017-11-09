@@ -8,11 +8,11 @@ using UnityEngine;
 public class AgentDestroyer : MonoBehaviour {
     public bool alwaysDestroy;
 
-    EventManager eventManager;
+    SimpleEventManager eventManager;
 	AgentManager agentManager;
 
 	void Start(){
-		eventManager = GameObject.Find ("EventManager").GetComponent<EventManager>();
+		eventManager = GameObject.Find ("SimpleEventManager").GetComponent<SimpleEventManager>();
 		agentManager = GameObject.Find ("AgentManager").GetComponent<AgentManager> ();
 	}
 	void OnTriggerEnter(Collider other){

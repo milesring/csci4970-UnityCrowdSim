@@ -9,26 +9,23 @@ public class LocationManager : MonoBehaviour {
 	private GameObject[] entrances;
 	private GameObject[] exits;
 	private GameObject[] goals;
-	public float centerRadius;
-	private GameObject center;
+	//private GameObject[] all;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		entrances = FindLocations("Entrance");
 		exits = FindLocations("Exit");
 		goals = FindLocations("Goal");
-		center = GameObject.Find ("BuildingCenter");
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+		/*all = new GameObject[entrances.Length + exits.Length];
+		System.Array.Copy (entrances, 0, all, 0, entrances.Length);
+		System.Array.Copy (exits, 0, all, entrances.Length, exits.Length);
+		*/
+
 	}
 
 	GameObject[] FindLocations(string tag){
 		//Finds all locations with the passed in tag
-		GameObject[] tempArray = GameObject.FindGameObjectsWithTag (tag);
-		return tempArray;
+		return GameObject.FindGameObjectsWithTag (tag);
 	}
 
     /// <summary>
@@ -49,19 +46,50 @@ public class LocationManager : MonoBehaviour {
 		}
 	}
 
-    /// <summary>
-    /// Given an agent's position, find the nearest location that will destroy the agent's
-    /// GameObject
-    /// </summary>
-    /// <param name="agentPos">an agent's position</param>
-    /// <returns>the nearest location that will destroy the agent</returns>
-	public Vector3 FindNearestDestroyRadius(Vector3 agentPos){
-		Vector3 heading = agentPos - center.transform.position;
-		float distance = heading.magnitude;
-		Vector3 direction = heading / distance;
+	//returns nearest unless at goal, this will return a random goal
+	public GameObject NextLocation(Actions agentAction){
+		GameObject[] locations = GetLocations (agentAction);
+		GameObject nearest = null;
+		if (locations != null) {
+			//agent not at goal or waiting for goal
+			if (!agentAction.Equals (Actions.AtGoal) && !agentAction.Equals(Actions.Idle)) {
+				//calculate nearest
+				foreach (GameObject location in locations) {
+					if (nearest == null) {
+						nearest = location;
+					} else {
+						float magnitudeToAltLocation
+						= (location.transform.position - this.transform.position).magnitude;
+						float magnitudeToCurrNearestLocation
+						= (nearest.transform.position - this.transform.position).magnitude;
 
-		//Debug.Log ("Direction: " + (direction*centerRadius));
-		//Vector3 destroyPoint = -heading * centerRadius;
-		return direction*centerRadius;
+						if (magnitudeToAltLocation < magnitudeToCurrNearestLocation) {
+							nearest = location;
+						}
+					}
+				}
+			} else {
+				//random goal
+				return locations [Random.Range (0, locations.Length)];
+			}
+		}
+		return nearest;
+
+	}
+
+	public GameObject[] GetLocations(Actions agentAction){
+		switch(agentAction){
+		case Actions.FindingEntrance:
+			return entrances;
+		case Actions.FindingGoals:
+		case Actions.Idle:
+			return goals;
+		case Actions.FindingExits:
+			return exits;
+		case Actions.Emergency:
+			//return all;
+		default:
+			return null;
+		}
 	}
 }

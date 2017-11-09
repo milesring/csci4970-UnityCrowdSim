@@ -215,13 +215,6 @@ public class Navigation : MonoBehaviour {
             //event over, leave
             locations = locationManager.GetLocations("Exit");
             //Debug.Log ("Finding closest exit");
-        } else if (eventOver && !inVenue) {
-            endPos = locationManager.FindNearestDestroyRadius(transform.position);
-            //Debug.Log ("Finding oustide location to be destroyed");
-            //Debug.Log (endPos);
-            GameObject temp = new GameObject();
-            temp.transform.position = (endPos);
-            return temp;
         } else if (inVenue) {
             //continue finding goals to do in venue
             locations = locationManager.GetLocations("Goal");
