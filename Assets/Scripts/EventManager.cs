@@ -22,15 +22,22 @@ public class EventManager : MonoBehaviour {
 	void Update () {
 		eventTimer += Time.deltaTime;
 		if (!eventOverCalled && eventTimer > eventTime) {
-			agentManager.notifyAgents ();
+			agentManager.notifyAgents (false);
 			//Debug.Log ("Agents notified");
-			eventOverCalled = true;
 		}
-			
 	}
 
+    public float getEventTimer() {
+        return eventTimer;
+    }
+
+    public float getEventTime() {
+        return eventTime;
+    }
+
     /// <returns>true is the event is over, otherwise false</returns>
-	public bool eventOver(){
-		return eventOverCalled;
+	public bool eventOver {
+		get { return eventOverCalled; }
+        set { eventOverCalled = value; }
 	}
 }

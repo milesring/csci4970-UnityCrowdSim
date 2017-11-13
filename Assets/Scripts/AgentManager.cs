@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// Provides utility methods for working with all agents, as well as keeping metadata on the 
@@ -41,7 +42,7 @@ public class AgentManager : MonoBehaviour {
     
     /// <returns>true if agent generation is allowed, otherwise false</returns>
 	public bool spawnAllowed(){
-        if (agentCount >= agentAmount || eventManager.eventOver()) {
+        if (agentCount >= agentAmount || eventManager.eventOver) {
             return false;
         } else {
             return true;
@@ -51,12 +52,17 @@ public class AgentManager : MonoBehaviour {
     /// <summary>
     /// Notifies all agents that the event has ended
     /// </summary>
-	public void notifyAgents(){
+	public void notifyAgents(bool emergency){
 		GameObject[] agents = GameObject.FindGameObjectsWithTag ("Agent");
-		for (int i = 0; i < agents.Length; ++i) {
-			agents [i].GetComponent<Navigation> ().endEvent ();
-			//Debug.Log ("Agent " + i + " notified of event ending");
+		for (int i = 0; i < agents.Length; ++i)
+        {
+            agents [i].GetComponent<Navigation> ().endEvent ();
+            // speeds up by randomly by 1.5x minimum, 3x maximum
+            if (emergency) agents[i].GetComponent<NavMeshAgent>().speed *= (Random.value+1)*1.5f;
+            //Debug.Log ("Agent " + i + " notified of event ending");
+            eventManager.eventOver = true;
 		}
+
 	}
 
     /// <summary>
