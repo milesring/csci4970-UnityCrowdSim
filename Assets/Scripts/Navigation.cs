@@ -204,7 +204,7 @@ public class Navigation : MonoBehaviour {
     }
 
     // Based on this agent's status booleans, find an appropriate destination
-    private GameObject findNearestDestination() {
+    internal GameObject findNearestDestination() {
         GameObject[] locations;
         if (!inVenue && !eventOver) {
             locations = locationManager.GetLocations("Entrance");
@@ -214,11 +214,8 @@ public class Navigation : MonoBehaviour {
         } else if (eventOver && inVenue) {
             //event over, leave
             locations = locationManager.GetLocations("Exit");
-            //Debug.Log ("Finding closest exit");
         } else if (eventOver && !inVenue) {
             endPos = locationManager.FindNearestDestroyRadius(transform.position);
-            //Debug.Log ("Finding oustide location to be destroyed");
-            //Debug.Log (endPos);
             GameObject temp = new GameObject();
             temp.transform.position = (endPos);
             return temp;
@@ -226,7 +223,6 @@ public class Navigation : MonoBehaviour {
             //continue finding goals to do in venue
             locations = locationManager.GetLocations("Goal");
             int index = Random.Range(0, locations.Length);
-            //Debug.Log ("Found goal at :"+index);
             return locations[index];
         } else {
             locations = locationManager.GetLocations("Exit");
@@ -242,6 +238,8 @@ public class Navigation : MonoBehaviour {
         foreach (GameObject location in locations) {
             if (nearest == null) {
                 nearest = location;
+            } else if (location == GoalDestination) {
+                Debug.Log(AgentName + " skipping location");
             } else {
                 float magnitudeToAltLocation
                     = (location.transform.position - this.transform.position).magnitude;
@@ -252,15 +250,8 @@ public class Navigation : MonoBehaviour {
                 }
             }
         }
-
-        //Debug.Log ("Nearest location found at: " + nearest.transform.position.x + ", " + nearest.transform.position.y + ", " + nearest.transform.position.z);
+        
         return nearest;
-    }
-
-    // TODO Rename this...
-    public void AgentOfDestruction() {
-        agent.destination = calculateNearest(locationManager.GetLocations("Exit")).transform.position;
-        ResumeAgentSpeed();
     }
 
     /// <summary>
@@ -304,7 +295,6 @@ public class Navigation : MonoBehaviour {
 
     // Resumes the agent's previous speed
     internal void ResumeAgentSpeed() {
-        
         agent.isStopped = false;
         agent.speed = speed;
     }
@@ -313,7 +303,7 @@ public class Navigation : MonoBehaviour {
     internal void StopAgent() {
         agent.velocity = Vector3.zero;
         agent.isStopped = true;
-        //agent.speed = 0.0f;
+        agent.speed = 0.0f;
     }
 
     /// <summary>
