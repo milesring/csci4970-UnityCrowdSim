@@ -116,6 +116,7 @@ public class Navigation : MonoBehaviour {
             AtGoal = false;
             leaving = true;
             agent.destination = findNearestDestination().transform.position;
+            // TODO this will need to be modified to make agents dequeue
             // agent.speed = speed; Interferes with emergency button agent speed (in HUD)
         }
 
@@ -147,21 +148,12 @@ public class Navigation : MonoBehaviour {
     // Checks agent's status booleans and updates its goals / destinations as required
     private void destinationUpdate() {
         if (AtGoal) {
-            // TODO any logic here
-            // Agent being worked with
+            // Agent waiting at goal for new orders
         } else if (InQueue) {
-            // Agent waiting in queue
-
-            // TODO Check position in queue. Move if necessary. If at front of queue and queue
-            // ready for next agent, move up
+            // Agent waiting in queue, and the queue 
         } else if ((agent.destination - this.transform.position).sqrMagnitude < Mathf.Pow(destinationPadding, 2)) {
             // If the squared distance between the agent's destination and the agent is less that the squared
             // destination padding, then...
-            if (agent.destination.x == endPos.x && agent.destination.y == endPos.y) {
-                // TODO This is unlikely to ever happen, check may be removed in future revisions
-                Debug.Log("Agent " + AgentName + " has touched its destination.");
-            }
-
             if (!inVenue && !eventOver) {
                 Debug.Log(AgentName + " entered venue. Finding new goal.");
                 inVenue = true;
@@ -236,15 +228,17 @@ public class Navigation : MonoBehaviour {
     private GameObject calculateNearest(GameObject[] locations) {
         GameObject nearest = null;
         foreach (GameObject location in locations) {
-            if (nearest == null) {
-                nearest = location;
-            } else if (location == GoalDestination) {
+            if (location == GoalDestination) {
+                //TODO this will cause a null pointer exception if there is only a single location in the array
                 Debug.Log(AgentName + " skipping location");
+            } else if (nearest == null) {
+                nearest = location;
             } else {
                 float magnitudeToAltLocation
                     = (location.transform.position - this.transform.position).magnitude;
                 float magnitudeToCurrNearestLocation
                     = (nearest.transform.position - this.transform.position).magnitude;
+
                 if (magnitudeToAltLocation < magnitudeToCurrNearestLocation) {
                     nearest = location;
                 }
