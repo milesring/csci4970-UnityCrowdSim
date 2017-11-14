@@ -5,8 +5,9 @@ using UnityEngine;
 /// <summary>
 /// This class manages a variety of important locations and provides ease of access to the arrays
 /// </summary>
+
 public class LocationManager : MonoBehaviour {
-	private GameObject[] entrances;
+    private GameObject[] entrances;
 	private GameObject[] exits;
 	private GameObject[] goals;
 	public float centerRadius;
@@ -14,10 +15,10 @@ public class LocationManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		entrances = FindLocations("Entrance");
-		exits = FindLocations("Exit");
-		goals = FindLocations("Goal");
-		center = GameObject.Find ("BuildingCenter");
+		entrances = FindLocations(LocationTypes.ENTRANCE);
+		exits = FindLocations(LocationTypes.EXIT);
+		goals = FindLocations(LocationTypes.GOAL);
+		center = GameObject.Find (LocationTypes.BUILDING_CENTER.ToString());
 	}
 	
 	// Update is called once per frame
@@ -25,9 +26,9 @@ public class LocationManager : MonoBehaviour {
 		
 	}
 
-	GameObject[] FindLocations(string tag){
+	GameObject[] FindLocations(LocationTypes type) {
 		//Finds all locations with the passed in tag
-		GameObject[] tempArray = GameObject.FindGameObjectsWithTag (tag);
+		GameObject[] tempArray = GameObject.FindGameObjectsWithTag(type.ToString());
 		return tempArray;
 	}
 
@@ -36,17 +37,16 @@ public class LocationManager : MonoBehaviour {
     /// </summary>
     /// <param name="tag">the type of location to return</param>
     /// <returns>an array of tag-locations</returns>
-	public GameObject[] GetLocations(string tag){
-		switch(tag){
-		case "Entrance":
-			return entrances;
-		case "Goal":
-			return goals;
-		case "Exit":
-			return exits;
-		default:
-			return null;
-		}
+	public GameObject[] GetLocations(LocationTypes type) {
+        if (type == LocationTypes.ENTRANCE) {
+            return entrances;
+        } else if (type == LocationTypes.GOAL) {
+            return goals;
+        } else if (type == LocationTypes.EXIT) {
+            return exits;
+        } else {
+            return null;
+        }
 	}
 
     /// <summary>
