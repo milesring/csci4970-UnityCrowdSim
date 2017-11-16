@@ -7,6 +7,11 @@ public class EventManager : MonoBehaviour {
 	public float eventTime;
 	private float eventTimer;
 	private bool eventOverCalled;
+    public bool emergency
+    {
+        get;
+        private set;
+    }
 
 	public AgentManager agentManager;
 
@@ -38,4 +43,9 @@ public class EventManager : MonoBehaviour {
 		get { return eventOverCalled; }
         set { eventOverCalled = value; }
 	}
+
+    internal void SignalEmergency() {
+        emergency = true;
+        LocationManager locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
+    }
 }

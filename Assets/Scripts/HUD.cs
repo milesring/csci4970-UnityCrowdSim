@@ -83,6 +83,7 @@ public class HUD : MonoBehaviour {
     void emergencyClick()
     {
         agentManager.notifyAgents(true);
+        eventManager.SignalEmergency();
         emergencyButton.interactable = false;
     }
 
