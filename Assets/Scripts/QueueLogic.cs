@@ -8,7 +8,7 @@ using UnityEngine;
 /// a FIFO list and slowly dequeue agents from the front of the queue.
 /// TODO possibly alter interest level based on how many agents currently in queue
 /// </summary>
-public class QueueLogic : MonoBehaviour {
+public class QueueLogic : MonoBehaviour, IQueue {
     /// <summary>
     /// The name of the queue- used for debugging purposes
     /// </summary>
@@ -96,7 +96,7 @@ public class QueueLogic : MonoBehaviour {
         Navigation finishedAgent = currentAgent.GetComponent<Navigation>();
 
         finishedAgent.addVisitedGoal(this.gameObject);
-        finishedAgent.findNearestDestination();
+        finishedAgent.SetDestination(finishedAgent.findNearestDestination().transform.position, false);
         finishedAgent.AtGoal = false;
         finishedAgent.BeingServed = false;
         finishedAgent.ResumeAgentSpeed();
@@ -119,6 +119,13 @@ public class QueueLogic : MonoBehaviour {
                 //Log("Ordering " + agentNav.AgentName + " to move and face goal");
                 agent.GetComponent<Navigation>().ResumeAgentSpeed();
             }
+        }
+    }
+
+    // Only called if emergency signaled or the event ends.
+    public void DequeueAll() {
+        while (queue.Count > 0) {
+            Dequeue();
         }
     }
 

@@ -116,8 +116,6 @@ public class Navigation : MonoBehaviour {
             AtGoal = false;
             leaving = true;
             agent.destination = findNearestDestination().transform.position;
-            // TODO this will need to be modified to make agents dequeue
-            // agent.speed = speed; Interferes with emergency button agent speed (in HUD)
         }
 
         if (distracted) {
