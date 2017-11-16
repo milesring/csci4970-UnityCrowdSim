@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
@@ -52,6 +53,7 @@ public class Navigation : MonoBehaviour {
     private float speed;
     private bool inVenue;
     private GameObject GoalDestination;
+    private List<GameObject> visitedGoals = new List<GameObject>();
 
     // true if the agent is at its goal
     internal bool AtGoal {
@@ -111,8 +113,6 @@ public class Navigation : MonoBehaviour {
         tripTimer += Time.deltaTime;
 
         if (eventOver && !leaving) {
-            //Debug.Log ("Event over, leaving");
-            InQueue = false;
             AtGoal = false;
             leaving = true;
             agent.destination = findNearestDestination().transform.position;
@@ -196,16 +196,17 @@ public class Navigation : MonoBehaviour {
     }
 
     // Based on this agent's status booleans, find an appropriate destination
-    internal GameObject findNearestDestination() {
-        GameObject[] locations;
+    internal GameObject findNearestDestination()
+    {
+        List<GameObject> locationsList = new List<GameObject>();
         if (!inVenue && !eventOver) {
-            locations = locationManager.GetLocations(LocationTypes.ENTRANCE);
+            locationsList = locationManager.GetLocations(LocationTypes.ENTRANCE);
             //Debug.Log ("Finding closest entrance");
             // TODO once goals are in place this will be the check for event over(or something like that) && inVenue
 
         } else if (eventOver && inVenue) {
             //event over, leave
-            locations = locationManager.GetLocations(LocationTypes.EXIT);
+            locationsList = locationManager.GetLocations(LocationTypes.EXIT);
         } else if (eventOver && !inVenue) {
             endPos = locationManager.FindNearestDestroyRadius(transform.position);
             GameObject temp = new GameObject();
@@ -213,19 +214,27 @@ public class Navigation : MonoBehaviour {
             return temp;
         } else if (inVenue) {
             //continue finding goals to do in venue
-            locations = locationManager.GetLocations(LocationTypes.GOAL);
-            int index = Random.Range(0, locations.Length);
-            return locations[index];
+            locationsList = locationManager.GetLocations(LocationTypes.GOAL);
+            //TODO modify 
+            locationsList.RemoveAll(location => visitedGoals.Contains(location));
+            if (locationsList.Count == 0) {
+                Debug.Log(AgentName + " has visited all goals and is now leaving.");
+                leaving = true;
+                locationsList = locationManager.GetLocations(LocationTypes.EXIT);
+            } else {
+                int index = Random.Range(0, locationsList.Count);
+                return locationsList[index];
+            }
         } else {
-            locations = locationManager.GetLocations(LocationTypes.EXIT);
+            locationsList = locationManager.GetLocations(LocationTypes.EXIT);
         }
 
         //find nearest location
-        return calculateNearest(locations);
+        return calculateNearest(locationsList);
     }
 
     // Given an array of locations, determine which location is the nearest to the agent
-    private GameObject calculateNearest(GameObject[] locations) {
+    private GameObject calculateNearest(List<GameObject> locations) {
         GameObject nearest = null;
         foreach (GameObject location in locations) {
             if (location == GoalDestination) {
@@ -266,6 +275,10 @@ public class Navigation : MonoBehaviour {
         return GoalDestination;
     }
 
+    internal void addVisitedGoal(GameObject goal) {
+        visitedGoals.Add(goal);
+    }
+
     internal void SetDestination(Vector3 destination, bool saveCurrentDestination) {
         NavMeshAgent navMeshAgent = this.GetComponent<NavMeshAgent>();
         if (saveCurrentDestination) {
@@ -290,7 +303,10 @@ public class Navigation : MonoBehaviour {
     // Resumes the agent's previous speed
     internal void ResumeAgentSpeed() {
         agent.isStopped = false;
-        agent.speed = speed;
+        // Only reset the agent's speed if the agen'ts speed is 0. This allows emergencies to speed the agent up
+        if (agent.speed == 0.0f) {
+            agent.speed = speed;
+        }
     }
 
     // Saves the agent's current speed, then sets the agent's speed to 0.

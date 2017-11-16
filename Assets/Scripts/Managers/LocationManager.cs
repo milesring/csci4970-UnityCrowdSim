@@ -7,9 +7,9 @@ using UnityEngine;
 /// </summary>
 
 public class LocationManager : MonoBehaviour {
-    private GameObject[] entrances;
-	private GameObject[] exits;
-	private GameObject[] goals;
+    private List<GameObject> entrances;
+	private List<GameObject> exits;
+	private List<GameObject> goals;
 	public float centerRadius;
 	private GameObject center;
 
@@ -26,18 +26,17 @@ public class LocationManager : MonoBehaviour {
 		
 	}
 
-	GameObject[] FindLocations(LocationTypes type) {
-		//Finds all locations with the passed in tag
-		GameObject[] tempArray = GameObject.FindGameObjectsWithTag(type.ToString());
-		return tempArray;
+	private List<GameObject> FindLocations(LocationTypes type) {
+		//Finds all locations with the passed in tag, then converts the returned array to a list
+        return new List<GameObject>(GameObject.FindGameObjectsWithTag(type.ToString()));
 	}
 
     /// <summary>
     /// Given a tag, return an array of the tag's location type
     /// </summary>
     /// <param name="tag">the type of location to return</param>
-    /// <returns>an array of tag-locations</returns>
-	public GameObject[] GetLocations(LocationTypes type) {
+    /// <returns>a list of tag-locations</returns>
+	public List<GameObject> GetLocations(LocationTypes type) {
         if (type == LocationTypes.ENTRANCE) {
             return entrances;
         } else if (type == LocationTypes.GOAL) {
