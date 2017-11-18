@@ -97,7 +97,6 @@ public class QueueLogic : MonoBehaviour {
     {
         Navigation finishedAgent = currentAgent.GetComponent<Navigation>();
         // TODO Testing purposes only- remove for other scenes. Don't like modifying agent goal from here
-        finishedAgent.AgentOfDestruction();
         finishedAgent.AtGoal = false;
         finishedAgent.BeingServed = false;
         currentAgent = null;
