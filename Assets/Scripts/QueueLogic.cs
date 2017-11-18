@@ -94,7 +94,6 @@ public class QueueLogic : MonoBehaviour, IQueue {
     // Remove the agent at the front of the queue
     private void Dequeue() {
         Navigation finishedAgent = currentAgent.GetComponent<Navigation>();
-
         finishedAgent.addVisitedGoal(this.gameObject);
         finishedAgent.SetDestination(finishedAgent.findNearestDestination().transform.position, false);
         finishedAgent.AtGoal = false;
