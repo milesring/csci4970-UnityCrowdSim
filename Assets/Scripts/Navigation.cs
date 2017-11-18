@@ -2,59 +2,98 @@
 using UnityEngine.AI;
 
 /// <summary>
-/// This class controls the navigation behavior of an agent. This includes updating the agent's destination 
+/// This class controls the navigation behavior of an agent. This includes updating the agent's destination
 /// and tracking various status values such as the agent's distraction
 /// </summary>
 public class Navigation : MonoBehaviour {
-	private LocationManager locationManager;
+    private LocationManager locationManager;
+    private static int agentNumber = 0;
+    public string Name
+    {
+        get; set;
+    }
 
-	[Header("Venue Navigation")]
+    internal string AgentName {
+        get; set;
+    }
+
+    [Header("Venue Navigation")]
     /// <summary>
     /// Distance to stop prior to destination
     /// </summary>
    	public float destinationPadding;
-	private float tripTimer;
-	private bool leaving;
+    private float tripTimer;
+    private bool leaving;
 
-	[Header("Venue Goals")]
-	public float goalTimeMin;
-	public float goalTimeMax;
-	private float goalTimer;
-	private float goalTime;
+    [Header("Venue Goals")]
+    public float goalTimeMin;
+    public float goalTimeMax;
+    private float goalTimer;
+    private float goalTime;
     // TODO "eventOver" isn't an agent's property, it is an environment property. This should be moved.
-	private bool eventOver;
+    private bool eventOver;
 
-	[Header("Points of Interest")]
+    [Header("Points of Interest")]
     /// <summary>
     ///  How long an agent will be distracted for
     /// </summary>
 	public float distractionTime;
-	private float distractionValue;
+    private float distractionValue;
     private bool distracted;
-	private float distractionTimer;
+    private float distractionTimer;
 
-	private Vector3 endPos;
-	private Vector3 lastDestination;
-	private float speed;
-	private bool inVenue;
-	private GameObject destination;
+    private Vector3 endPos;
+    // This variable stores what the agent's end-goal is. This is required as the NavMeshAgent's
+    // destination sometimes needs to change while its end-goal is the same.
+    internal Vector3 NavigationDestination {
+        get; set;
+    }
 
-	private bool atGoal;
-	private bool inQueue;
+    private float speed;
+    private bool inVenue;
+    private GameObject GoalDestination;
+
+    // true if the agent is at its goal
+    internal bool AtGoal {
+        get; set;
+    }
+
+    // true is agent is in a queue
+    private bool InQueue;
+
+    public void setInQueue(bool isInQueue)
+    {
+        agent.updateRotation = isInQueue ? false : true;
+        InQueue = isInQueue;
+
+    }
+    public bool isInQueue()
+    {
+        return InQueue;
+    }
+
+    // true if agent is being served at front of queue
+    internal bool BeingServed {
+        get; set;
+    }
 
     private NavMeshAgent agent;
 
-	// Use this for initialization
-	void Start () {
-		locationManager = GameObject.Find ("LocationManager").GetComponent<LocationManager> ();
-		inVenue = false;
-		distracted = false;
-		leaving = false;
-		eventOver = false;
-		tripTimer = 0.0f;
-		distractionTimer = 0.0f;
-		atGoal = false;
-		inQueue = false;
+    // Use this for initialization
+    void Start() {
+        AgentName = string.Format("Agent {0}", agentNumber.ToString("D3"));
+        agentNumber++;
+
+        locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
+
+        inVenue = false;
+        distracted = false;
+        leaving = false;
+        eventOver = false;
+        tripTimer = 0.0f;
+        distractionTimer = 0.0f;
+        AtGoal = false;
+        InQueue = false;
 
         // FIXME this is unused
         goalTime = Random.Range(goalTimeMin, goalTimeMax);
@@ -63,22 +102,22 @@ public class Navigation : MonoBehaviour {
         agent = this.GetComponent<NavMeshAgent>();
         agent.destination = findNearestDestination().transform.position;
 
-		speed = agent.speed;
-	}
+        speed = agent.speed;
+    }
 
-	// Update is called once per frame
-	void Update () {
-		//increase total alive timer, used later for statistics
-		tripTimer += Time.deltaTime;
+    // Update is called once per frame
+    void Update() {
+        //increase total alive timer, used later for statistics
+        tripTimer += Time.deltaTime;
 
-		if (eventOver && !leaving) {
-			//Debug.Log ("Event over, leaving");
-			inQueue = false;
-			atGoal = false;
-			leaving = true;
-            agent.destination = findNearestDestination ().transform.position;
-            agent.speed = speed;
-		}
+        if (eventOver && !leaving) {
+            //Debug.Log ("Event over, leaving");
+            InQueue = false;
+            AtGoal = false;
+            leaving = true;
+            agent.destination = findNearestDestination().transform.position;
+            // agent.speed = speed; Interferes with emergency button agent speed (in HUD)
+        }
 
         if (distracted) {
             distractionUpdate();
@@ -94,11 +133,11 @@ public class Navigation : MonoBehaviour {
 
         if (distractionTimer > distractionTime) {
             //restore last goal for agent
-            agent.destination = lastDestination;
+            agent.destination = NavigationDestination;
             distracted = false;
 
             //resume speed
-            agent.speed = speed;
+            ResumeAgentSpeed();
 
             //reset timer
             distractionTimer = 0.0f;
@@ -107,34 +146,45 @@ public class Navigation : MonoBehaviour {
 
     // Checks agent's status booleans and updates its goals / destinations as required
     private void destinationUpdate() {
-        if (atGoal || inQueue) {
-            // Agent in a queue or at their goal
+        if (AtGoal) {
+            // TODO any logic here
+            // Agent being worked with
+        } else if (InQueue) {
+            // Agent waiting in queue
 
+            // TODO Check position in queue. Move if necessary. If at front of queue and queue
+            // ready for next agent, move up
         } else if ((agent.destination - this.transform.position).sqrMagnitude < Mathf.Pow(destinationPadding, 2)) {
+            // If the squared distance between the agent's destination and the agent is less that the squared
+            // destination padding, then...
             if (agent.destination.x == endPos.x && agent.destination.y == endPos.y) {
-                //Stop moving if destination reached
+                // TODO This is unlikely to ever happen, check may be removed in future revisions
+                Debug.Log("Agent " + AgentName + " has touched its destination.");
             }
 
-            // FIXME is this supposed to be an "else if"?
             if (!inVenue && !eventOver) {
-                Debug.Log("Agent entered venue. Finding new goal");
+                Debug.Log(AgentName + " entered venue. Finding new goal.");
                 inVenue = true;
                 //find nearest destination in the building, at this point a goal should be sought out
                 //aka dancefloor, bar, seating, etc.
-                destination = findNearestDestination();
-                agent.destination = destination.transform.position;
+                GoalDestination = findNearestDestination();
+                agent.destination = GoalDestination.transform.position;
             } else if (eventOver && inVenue) {
-                Debug.Log("Agent reached exit. Leaving the venue");
+                // If the event is over and we are in the venue, our only destinations are exits.
+                Debug.Log(AgentName + " reached exit. Leaving the venue.");
                 inVenue = false;
-                destination = findNearestDestination();
-                agent.destination = destination.transform.position;
+                GoalDestination = findNearestDestination();
+                agent.destination = GoalDestination.transform.position;
             } else if (inVenue) {
-                Debug.Log("Agent reached goal");
-                destination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
-                atGoal = true;
+                Debug.Log(AgentName + " reached goal.");
+                if (!InQueue) {
+                    GoalDestination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
+                }
+
+                AtGoal = true;
                 agent.speed = 0.0f;
             } else {
-                Debug.Log("Agent error in destinationUpdate(). Stopping.");
+                Debug.Log(AgentName + " error in destinationUpdate(). Stopping.");
                 agent.speed = 0.0f;
             }
         }
@@ -144,14 +194,14 @@ public class Navigation : MonoBehaviour {
     /// Calling this method distracts the agent, causing the agent to stop for a predetermined amount of time.
     /// Once the distraction time has expired, the agent will continue to its previous destination.
     /// </summary>
-	public void distract(){
-		var NavMeshAgent = this.GetComponent<NavMeshAgent>();
-		distractionTimer = 0.0f;
-		distracted = true;
+	public void distract() {
+        var NavMeshAgent = this.GetComponent<NavMeshAgent>();
+        distractionTimer = 0.0f;
+        distracted = true;
 
-		//save last destination
-		lastDestination = NavMeshAgent.destination;
-	}
+        //save last destination
+        NavigationDestination = NavMeshAgent.destination;
+    }
 
     // Based on this agent's status booleans, find an appropriate destination
     private GameObject findNearestDestination(){
@@ -193,9 +243,9 @@ public class Navigation : MonoBehaviour {
             if (nearest == null) {
                 nearest = location;
             } else {
-                float magnitudeToAltLocation 
+                float magnitudeToAltLocation
                     = (location.transform.position - this.transform.position).magnitude;
-                float magnitudeToCurrNearestLocation 
+                float magnitudeToCurrNearestLocation
                     = (nearest.transform.position - this.transform.position).magnitude;
                 if (magnitudeToAltLocation < magnitudeToCurrNearestLocation) {
                     nearest = location;
@@ -210,45 +260,55 @@ public class Navigation : MonoBehaviour {
     /// <summary>
     /// Ends the event, causing agents to begin exiting
     /// </summary>
-	public void endEvent(){
-		eventOver = true;
-	}
+	public void endEvent() {
+        eventOver = true;
+    }
 
     /// <returns>true if the agent is outside the venue, otherwise false</returns>
-	public bool isOutside(){
-		return inVenue;
-	}
-
-    /// <summary>
-    /// Sets whether or not the agent has reached its goal
-    /// </summary>
-    /// <param name="value">true if agent has reached its goal, otherwise false</param>
-	public void AtGoal(bool value){
-		atGoal = value;
-	}
-
-    /// <returns>true if the agent is at its goal, otherwise false</returns>
-	public bool IsAtGoal(){
-		return atGoal;
-	}
-
-    /// <summary>
-    /// Sets whether or not the agent is in a queue
-    /// </summary>
-    /// <param name="value">true if agent is in a queue, otherwise false</param>
-	public void InQueue(bool value){
-		inQueue = value;
-	}
-
-    /// <returns>true if the agent is in a queue, otherwise false</returns>
-	public bool IsInQueue(){
-		return inQueue;
-	}
+	public bool isOutside()
+    {
+        return inVenue;
+    }
 
     /// <returns>the destination of the agent</returns>
-	public GameObject GetDestination(){
-		return destination;
-	}
+	public GameObject GetDestination() {
+        return GoalDestination;
+    }
+
+    internal void SetDestination(Vector3 destination, bool saveCurrentDestination) {
+        NavMeshAgent navMeshAgent = this.GetComponent<NavMeshAgent>();
+        if (saveCurrentDestination) {
+            NavigationDestination = navMeshAgent.destination;
+        }
+        
+        navMeshAgent.destination = destination;
+    }
+
+    internal Vector3 GetNavMeshAgentDestination() {
+        return this.GetComponent<NavMeshAgent>().destination;
+    }
+
+    internal void UpdateLookRotation() {
+        Vector3 targetDir = (NavigationDestination - this.transform.position).normalized;
+        float step = speed * Time.deltaTime;
+        Vector3 newDir = Vector3.RotateTowards(this.transform.forward, targetDir, step, 10.0f);
+        Debug.DrawRay(this.transform.position, newDir, Color.red);
+        this.transform.rotation = Quaternion.LookRotation(newDir);
+    }
+
+    // Resumes the agent's previous speed
+    internal void ResumeAgentSpeed() {
+        
+        agent.isStopped = false;
+        agent.speed = speed;
+    }
+
+    // Saves the agent's current speed, then sets the agent's speed to 0.
+    internal void StopAgent() {
+        agent.velocity = Vector3.zero;
+        agent.isStopped = true;
+        //agent.speed = 0.0f;
+    }
 
     /// <summary>
     /// On start, a random value between .4 and 1.0 that is generated and assigned as this agent's
