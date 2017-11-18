@@ -157,13 +157,13 @@ public class Navigation : MonoBehaviour {
     private GameObject findNearestDestination(){
 		GameObject[] locations;
 		if (!inVenue && !eventOver) {
-			locations = locationManager.GetLocations ("Entrance");
+			locations = locationManager.GetLocations(LocationTypes.ENTRANCE);
 			//Debug.Log ("Finding closest entrance");
 			// TODO once goals are in place this will be the check for event over(or something like that) && inVenue
         
 		} else if (eventOver && inVenue) {
 			//event over, leave
-			locations = locationManager.GetLocations("Exit");
+			locations = locationManager.GetLocations(LocationTypes.EXIT);
 			//Debug.Log ("Finding closest exit");
 		} else if(eventOver && !inVenue){
 			endPos = locationManager.FindNearestDestroyRadius(transform.position);
@@ -174,12 +174,12 @@ public class Navigation : MonoBehaviour {
 			return temp;
 		} else if (inVenue) {
 			//continue finding goals to do in venue
-			locations = locationManager.GetLocations("Goal");
+			locations = locationManager.GetLocations(LocationTypes.GOAL);
 			int index = Random.Range (0, locations.Length);
 			//Debug.Log ("Found goal at :"+index);
 			return locations [index];
 		} else {
-			locations = locationManager.GetLocations("Exit");
+			locations = locationManager.GetLocations(LocationTypes.EXIT);
 		}
 
         //find nearest location
