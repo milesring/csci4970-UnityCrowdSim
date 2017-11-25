@@ -123,13 +123,18 @@ public class QueueLogic : MonoBehaviour, IQueue {
 
     // Only called if emergency signaled or the event ends.
     public void DequeueAll() {
+        Log("Dequeuing all " + queue.Count + " agents.");
         while (queue.Count > 0) {
             Dequeue();
         }
     }
 
-	//Returns position of last agent in line
-	Vector3 getLast(){
+    public string GetQueueName() {
+        return queueName;
+    }
+
+    //Returns position of last agent in line
+    Vector3 getLast(){
 		return queue[queue.Count-1].transform.position;
 	}
 

@@ -51,8 +51,8 @@ public class EventManager : MonoBehaviour {
         LocationManager locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
         List<GameObject> goals = locationManager.GetLocations(LocationTypes.GOAL);
         foreach (GameObject goal in goals) {
-            if (goal is IQueue) {
-                IQueue queue = goal.GetComponent<IQueue>();
+            IQueue queue = goal.GetComponent<IQueue>();
+            if (queue != null) {
                 queue.DequeueAll();
             }
         }
