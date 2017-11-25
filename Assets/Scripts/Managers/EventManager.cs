@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Holds metadata on the environment
@@ -26,6 +27,7 @@ public class EventManager : MonoBehaviour {
 		eventTimer += Time.deltaTime;
 		if (!eventOverCalled && eventTimer > eventTime) {
 			agentManager.notifyAgents (false);
+        
 			//Debug.Log ("Agents notified");
 		}
 	}
@@ -47,5 +49,12 @@ public class EventManager : MonoBehaviour {
     internal void SignalEmergency() {
         emergency = true;
         LocationManager locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
+        List<GameObject> goals = locationManager.GetLocations(LocationTypes.GOAL);
+        foreach (GameObject goal in goals) {
+            if (goal is IQueue) {
+                IQueue queue = goal.GetComponent<IQueue>();
+                queue.DequeueAll();
+            }
+        }
     }
 }

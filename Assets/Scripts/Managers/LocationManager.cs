@@ -38,12 +38,13 @@ public class LocationManager : MonoBehaviour {
     /// <returns>a list of tag-locations</returns>
 	public List<GameObject> GetLocations(LocationTypes type) {
         if (type == LocationTypes.ENTRANCE) {
-            return entrances;
+            return new List<GameObject>(entrances);
         } else if (type == LocationTypes.GOAL) {
-            return goals;
+            return new List<GameObject>(goals);
         } else if (type == LocationTypes.EXIT) {
-            return exits;
+            return new List<GameObject>(exits);
         } else {
+            Debug.Log("Error choosing a location list to return.");
             return null;
         }
 	}

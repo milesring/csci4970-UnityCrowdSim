@@ -146,6 +146,17 @@ public class Navigation : MonoBehaviour {
     // Checks agent's status booleans and updates its goals / destinations as required
     private void destinationUpdate() {
         if (AtGoal) {
+            if (BeingServed) {
+                // Still under control of a queue
+            } else {
+                addVisitedGoal(GoalDestination);
+                GoalDestination = findNearestDestination();
+                if (GoalDestination == null) {
+                    Debug.Log("WARNING: " + AgentName + " goal is null");
+                }
+
+                agent.destination = GoalDestination.transform.position;
+            }
             // Agent waiting at goal for new orders
         } else if (InQueue) {
             // Agent waiting in queue, and the queue 
@@ -167,7 +178,7 @@ public class Navigation : MonoBehaviour {
                 agent.destination = GoalDestination.transform.position;
             } else if (inVenue) {
                 Debug.Log(AgentName + " reached goal.");
-                if (!InQueue) {
+                if (!InQueue && GoalDestination.GetComponent<IQueue>() != null) {
                     GoalDestination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
                 }
 
@@ -194,8 +205,7 @@ public class Navigation : MonoBehaviour {
     }
 
     // Based on this agent's status booleans, find an appropriate destination
-    internal GameObject findNearestDestination()
-    {
+    internal GameObject findNearestDestination() {
         List<GameObject> locationsList = new List<GameObject>();
         if (!inVenue && !eventOver) {
             locationsList = locationManager.GetLocations(LocationTypes.ENTRANCE);
@@ -220,10 +230,12 @@ public class Navigation : MonoBehaviour {
                 leaving = true;
                 locationsList = locationManager.GetLocations(LocationTypes.EXIT);
             } else {
+                Debug.Log(AgentName + " has finished at a goal and is choosing a new random goal.");
                 int index = Random.Range(0, locationsList.Count);
                 return locationsList[index];
             }
         } else {
+            Debug.Log("Default dest");
             locationsList = locationManager.GetLocations(LocationTypes.EXIT);
         }
 
@@ -234,11 +246,9 @@ public class Navigation : MonoBehaviour {
     // Given an array of locations, determine which location is the nearest to the agent
     private GameObject calculateNearest(List<GameObject> locations) {
         GameObject nearest = null;
+
         foreach (GameObject location in locations) {
-            if (location == GoalDestination) {
-                //TODO this will cause a null pointer exception if there is only a single location in the array
-                Debug.Log(AgentName + " skipping location");
-            } else if (nearest == null) {
+            if (nearest == null) {
                 nearest = location;
             } else {
                 float magnitudeToAltLocation
