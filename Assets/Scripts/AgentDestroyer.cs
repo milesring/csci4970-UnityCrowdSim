@@ -15,10 +15,9 @@ public class AgentDestroyer : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other){
-        //Debug.Log ("Collider entered. event over= "+eventManager.eventOver());
-        //Debug.Log("Compare: "+other.gameObject.CompareTag("Agent"));
         if (other.gameObject.CompareTag("Agent")) {
-            if (eventManager.eventOver) {
+            Navigation agent = other.gameObject.GetComponent<Navigation>();
+            if (eventManager.eventOver || agent.IsLeaving()) {
                 Destroy(other.gameObject);
                 agentManager.agentDestroyed();
             }

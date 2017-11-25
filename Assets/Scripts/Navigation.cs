@@ -64,14 +64,12 @@ public class Navigation : MonoBehaviour {
     // true is agent is in a queue
     private bool InQueue;
 
-    public void setInQueue(bool isInQueue)
-    {
+    public void setInQueue(bool isInQueue) {
         agent.updateRotation = isInQueue ? false : true;
         InQueue = isInQueue;
 
     }
-    public bool isInQueue()
-    {
+    public bool isInQueue() {
         return InQueue;
     }
 
@@ -153,6 +151,7 @@ public class Navigation : MonoBehaviour {
                 // Still under control of a queue
             } else {
                 UpdateVisitedGoal();
+                AtGoal = false;
                 goalDestination = findNearestDestination();
                 agent.destination = goalDestination.transform.position;
             }
@@ -169,10 +168,10 @@ public class Navigation : MonoBehaviour {
                 //aka dancefloor, bar, seating, etc.
                 goalDestination = findNearestDestination();
                 agent.destination = goalDestination.transform.position;
-            } else if (eventOver && inVenue) {
+            } else if (inVenue && (eventOver || leaving)) {
                 // If the event is over and we are in the venue, our only destinations are exits.
-                Debug.Log(AgentName + " reached exit. Leaving the venue.");
                 inVenue = false;
+                Debug.Log(AgentName + " reached exit. Leaving the venue. inVenue = " + inVenue + " --- leaving = " + leaving + " --- eventOver = " + eventOver);
                 goalDestination = findNearestDestination();
                 agent.destination = goalDestination.transform.position;
             } else if (inVenue) {
@@ -182,7 +181,6 @@ public class Navigation : MonoBehaviour {
                 }
 
                 AtGoal = true;
-                agent.speed = 0.0f;
             } else {
                 Debug.Log(AgentName + " error in destinationUpdate(). Stopping.");
                 agent.speed = 0.0f;
@@ -206,36 +204,37 @@ public class Navigation : MonoBehaviour {
     // Based on this agent's status booleans, find an appropriate destination
     internal GameObject findNearestDestination() {
         List<GameObject> locationsList = new List<GameObject>();
-        if (!inVenue && !eventOver) {
-            locationsList = locationManager.GetLocations(LocationTypes.ENTRANCE);
-            //Debug.Log ("Finding closest entrance");
-            // TODO once goals are in place this will be the check for event over(or something like that) && inVenue
 
-        } else if (eventOver && inVenue) {
-            //event over, leave
-            locationsList = locationManager.GetLocations(LocationTypes.EXIT);
-        } else if (eventOver && !inVenue) {
-            endPos = locationManager.FindNearestDestroyRadius(transform.position);
-            GameObject temp = new GameObject();
-            temp.transform.position = (endPos);
-            return temp;
-        } else if (inVenue) {
-            //continue finding goals to do in venue
-            locationsList = locationManager.GetLocations(LocationTypes.GOAL);
-            //TODO modify 
-            locationsList.RemoveAll(location => visitedGoals.Contains(location));
-            if (locationsList.Count == 0) {
-                Debug.Log(AgentName + " has visited all goals and is now leaving.");
-                leaving = true;
-                locationsList = locationManager.GetLocations(LocationTypes.EXIT);
-            } else {
-                Debug.Log(AgentName + " has finished at a goal and is choosing a new random goal.");
-                int index = Random.Range(0, locationsList.Count);
-                return locationsList[index];
+        if (!inVenue) {
+            if (eventOver || leaving) {
+                // Agent has left and must be DESTROYED
+                endPos = locationManager.FindNearestDestroyRadius(transform.position);
+                GameObject temp = new GameObject();
+                temp.transform.position = (endPos);
+                return temp;
+            } else if (!eventOver) {
+                locationsList = locationManager.GetLocations(LocationTypes.ENTRANCE);
             }
         } else {
-            Debug.Log(AgentName + ": Default destination- exiting.");
-            locationsList = locationManager.GetLocations(LocationTypes.EXIT);
+            // Agent in venue
+            if (eventOver || leaving) {
+                // Agent needs to leave
+                Debug.Log(AgentName + " is finding an exit");
+                locationsList = locationManager.GetLocations(LocationTypes.EXIT);
+            } else {
+                //continue finding goals to do in venue
+                locationsList = locationManager.GetLocations(LocationTypes.GOAL);
+                locationsList.RemoveAll(location => visitedGoals.Contains(location));
+                if (locationsList.Count == 0) {
+                    Debug.Log(AgentName + " has visited all goals and is now leaving.");
+                    leaving = true;
+                    locationsList = locationManager.GetLocations(LocationTypes.EXIT);
+                } else {
+                    Debug.Log(AgentName + " has finished at a goal and is choosing a new random goal.");
+                    int index = Random.Range(0, locationsList.Count);
+                    return locationsList[index];
+                }
+            }
         }
 
         //find nearest location
@@ -272,14 +271,18 @@ public class Navigation : MonoBehaviour {
     }
 
     /// <returns>true if the agent is outside the venue, otherwise false</returns>
-	public bool isOutside()
-    {
+	public bool isOutside() {
         return inVenue;
     }
 
     /// <returns>the destination of the agent</returns>
 	public GameObject GetDestination() {
         return goalDestination;
+    }
+
+    /// <returns>true is the agent is leaving the venue, otherwise false</returns>
+    public bool IsLeaving() {
+        return leaving;
     }
 
     internal void UpdateVisitedGoal() {
