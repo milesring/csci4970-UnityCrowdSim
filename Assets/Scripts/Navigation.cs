@@ -14,7 +14,7 @@ public class Navigation : MonoBehaviour {
         get; set;
     }
 
-    internal string AgentName {
+    public string AgentName {
         get; set;
     }
 
@@ -52,7 +52,8 @@ public class Navigation : MonoBehaviour {
 
     private float speed;
     private bool inVenue;
-    private GameObject GoalDestination;
+    // The game object representation of the agent's current Destination.
+    private GameObject goalDestination;
     private List<GameObject> visitedGoals = new List<GameObject>();
 
     // true if the agent is at its goal
@@ -102,7 +103,8 @@ public class Navigation : MonoBehaviour {
         distractionValue = Random.Range(0.4f, 1.0f);
 
         agent = this.GetComponent<NavMeshAgent>();
-        agent.destination = findNearestDestination().transform.position;
+        goalDestination = findNearestDestination();
+        agent.destination = goalDestination.transform.position;
 
         speed = agent.speed;
     }
@@ -115,7 +117,8 @@ public class Navigation : MonoBehaviour {
         if (eventOver && !leaving) {
             AtGoal = false;
             leaving = true;
-            agent.destination = findNearestDestination().transform.position;
+            goalDestination = findNearestDestination();
+            agent.destination = goalDestination.transform.position;
         }
 
         if (distracted) {
@@ -149,13 +152,9 @@ public class Navigation : MonoBehaviour {
             if (BeingServed) {
                 // Still under control of a queue
             } else {
-                addVisitedGoal(GoalDestination);
-                GoalDestination = findNearestDestination();
-                if (GoalDestination == null) {
-                    Debug.Log("WARNING: " + AgentName + " goal is null");
-                }
-
-                agent.destination = GoalDestination.transform.position;
+                UpdateVisitedGoal();
+                goalDestination = findNearestDestination();
+                agent.destination = goalDestination.transform.position;
             }
             // Agent waiting at goal for new orders
         } else if (InQueue) {
@@ -168,18 +167,18 @@ public class Navigation : MonoBehaviour {
                 inVenue = true;
                 //find nearest destination in the building, at this point a goal should be sought out
                 //aka dancefloor, bar, seating, etc.
-                GoalDestination = findNearestDestination();
-                agent.destination = GoalDestination.transform.position;
+                goalDestination = findNearestDestination();
+                agent.destination = goalDestination.transform.position;
             } else if (eventOver && inVenue) {
                 // If the event is over and we are in the venue, our only destinations are exits.
                 Debug.Log(AgentName + " reached exit. Leaving the venue.");
                 inVenue = false;
-                GoalDestination = findNearestDestination();
-                agent.destination = GoalDestination.transform.position;
+                goalDestination = findNearestDestination();
+                agent.destination = goalDestination.transform.position;
             } else if (inVenue) {
                 Debug.Log(AgentName + " reached goal.");
-                if (!InQueue && GoalDestination.GetComponent<IQueue>() != null) {
-                    GoalDestination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
+                if (!InQueue && goalDestination.GetComponent<IQueue>() != null) {
+                    goalDestination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
                 }
 
                 AtGoal = true;
@@ -235,7 +234,7 @@ public class Navigation : MonoBehaviour {
                 return locationsList[index];
             }
         } else {
-            Debug.Log("Default dest");
+            Debug.Log(AgentName + ": Default destination- exiting.");
             locationsList = locationManager.GetLocations(LocationTypes.EXIT);
         }
 
@@ -280,24 +279,19 @@ public class Navigation : MonoBehaviour {
 
     /// <returns>the destination of the agent</returns>
 	public GameObject GetDestination() {
-        return GoalDestination;
+        return goalDestination;
     }
 
-    internal void addVisitedGoal(GameObject goal) {
-        visitedGoals.Add(goal);
+    internal void UpdateVisitedGoal() {
+        visitedGoals.Add(goalDestination);
     }
 
     internal void SetDestination(Vector3 destination, bool saveCurrentDestination) {
-        NavMeshAgent navMeshAgent = this.GetComponent<NavMeshAgent>();
         if (saveCurrentDestination) {
-            NavigationDestination = navMeshAgent.destination;
+            NavigationDestination = agent.destination;
         }
         
-        navMeshAgent.destination = destination;
-    }
-
-    internal Vector3 GetNavMeshAgentDestination() {
-        return this.GetComponent<NavMeshAgent>().destination;
+        agent.destination = destination;
     }
 
     internal void UpdateLookRotation() {
