@@ -34,6 +34,7 @@ public class EventManager : MonoBehaviour {
 		eventTimer += Time.deltaTime;
 		if (!IsEventOver && eventTimer > eventTime) {
 			agentManager.notifyAgents (false);
+            EmptyQueues();
 		}
 	}
 
@@ -47,6 +48,10 @@ public class EventManager : MonoBehaviour {
 
     internal void SignalEmergency() {
         emergency = true;
+        EmptyQueues();
+    }
+
+    private void EmptyQueues(){
         LocationManager locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
         List<GameObject> goals = locationManager.GetLocations(LocationTypes.GOAL);
         foreach (GameObject goal in goals) {
