@@ -109,7 +109,6 @@ public class QueueLogic : MonoBehaviour, IQueue {
 
             foreach (GameObject agent in queue) { 
                 // Tell remaining queued agent to move forward in 
-                Navigation agentNav = agent.GetComponent<Navigation>();
                 agent.GetComponent<Navigation>().ResumeAgentSpeed();
             }
         }
