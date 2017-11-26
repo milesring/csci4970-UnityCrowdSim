@@ -49,12 +49,13 @@ public class Navigation : MonoBehaviour {
     internal Vector3 NavigationDestination {
         get; set;
     }
+    // The game object representation of the agent's current Destination. Generally the GameObject
+    // representation of NavigationDestination
+    private GameObject goalDestination;
+    private List<GameObject> visitedGoals = new List<GameObject>();
 
     private float speed;
     private bool inVenue;
-    // The game object representation of the agent's current Destination.
-    private GameObject goalDestination;
-    private List<GameObject> visitedGoals = new List<GameObject>();
 
     // true if the agent is at its goal
     internal bool AtGoal {
@@ -160,30 +161,35 @@ public class Navigation : MonoBehaviour {
             // Agent waiting in queue, and the queue 
         } else if ((agent.destination - this.transform.position).sqrMagnitude < Mathf.Pow(destinationPadding, 2)) {
             // If the squared distance between the agent's destination and the agent is less that the squared
-            // destination padding, then...
-            if (!inVenue && !eventOver) {
+            // destination padding, then the agent has reached their current goal.
+            DestinationUpdateAtGoal();
+        }
+    }
+
+    private void DestinationUpdateAtGoal() {
+        if (!inVenue) {
+            if (!eventOver) {
+                // If agent is not in venue and the event has not ended, the agent has reached an entrance
                 Debug.Log(AgentName + " entered venue. Finding new goal.");
                 inVenue = true;
-                //find nearest destination in the building, at this point a goal should be sought out
-                //aka dancefloor, bar, seating, etc.
+                // Find nearest goal in the building
                 goalDestination = findNearestDestination();
                 agent.destination = goalDestination.transform.position;
-            } else if (inVenue && (eventOver || leaving)) {
+            }
+        } else {
+            if (eventOver || leaving) {
                 // If the event is over and we are in the venue, our only destinations are exits.
                 inVenue = false;
-                Debug.Log(AgentName + " reached exit. Leaving the venue. inVenue = " + inVenue + " --- leaving = " + leaving + " --- eventOver = " + eventOver);
+                Debug.Log(AgentName + " reached exit. Leaving the venue.");
                 goalDestination = findNearestDestination();
                 agent.destination = goalDestination.transform.position;
-            } else if (inVenue) {
+            } else {
                 Debug.Log(AgentName + " reached goal.");
                 if (!InQueue && goalDestination.GetComponent<IQueue>() != null) {
                     goalDestination.GetComponent<QueueLogic>().Enqueue(this.gameObject);
                 }
 
                 AtGoal = true;
-            } else {
-                Debug.Log(AgentName + " error in destinationUpdate(). Stopping.");
-                agent.speed = 0.0f;
             }
         }
     }
@@ -193,12 +199,11 @@ public class Navigation : MonoBehaviour {
     /// Once the distraction time has expired, the agent will continue to its previous destination.
     /// </summary>
 	public void distract() {
-        var NavMeshAgent = this.GetComponent<NavMeshAgent>();
         distractionTimer = 0.0f;
         distracted = true;
 
         //save last destination
-        NavigationDestination = NavMeshAgent.destination;
+        NavigationDestination = agent.destination;
     }
 
     // Based on this agent's status booleans, find an appropriate destination
@@ -222,10 +227,11 @@ public class Navigation : MonoBehaviour {
                 Debug.Log(AgentName + " is finding an exit");
                 locationsList = locationManager.GetLocations(LocationTypes.EXIT);
             } else {
-                //continue finding goals to do in venue
+                // Continue finding goals to do in venue
                 locationsList = locationManager.GetLocations(LocationTypes.GOAL);
                 locationsList.RemoveAll(location => visitedGoals.Contains(location));
                 if (locationsList.Count == 0) {
+                    // If an agent has visited all goals in venue, leave
                     Debug.Log(AgentName + " has visited all goals and is now leaving.");
                     leaving = true;
                     locationsList = locationManager.GetLocations(LocationTypes.EXIT);
@@ -297,6 +303,10 @@ public class Navigation : MonoBehaviour {
         agent.destination = destination;
     }
 
+    /*
+     * Called by a queue every frame to cause agent to rotate towards the queue's front.
+     * TODO Agents should rotate towards the agent in front of them.
+     */ 
     internal void UpdateLookRotation() {
         Vector3 targetDir = (NavigationDestination - this.transform.position).normalized;
         float step = speed * Time.deltaTime;
@@ -314,7 +324,7 @@ public class Navigation : MonoBehaviour {
         }
     }
 
-    // Saves the agent's current speed, then sets the agent's speed to 0.
+    // Sets the agent's speed to 0 and velocity to zero.
     internal void StopAgent() {
         agent.velocity = Vector3.zero;
         agent.isStopped = true;

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.AI;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -22,15 +20,14 @@ public class QueueLogic : MonoBehaviour, IQueue {
     public float maxQueueWorkTime;
     float queueWorkTime;
 
-	// Initializes the class
 	void Start () {
 		queue = new List<GameObject> ();
         queueWorkTime = 0.0f;
 	}
 
 	/*
-     * Update checks if the front of the queue is currently being "worked". If the queue is not
-     * busy and the queue has another agent in it, begin working with the next agent.
+     * Update checks if the front of the queue isBeingServed. If the queue is not busy and the queue 
+     * has another agent in it, begin serving the next agent.
      */
 	void Update () {
         if (busy) {
@@ -45,6 +42,7 @@ public class QueueLogic : MonoBehaviour, IQueue {
             busy = true;
 		}
 
+        // Update each queued agent's look rotation to face the queue
         foreach (GameObject agent in queue) {
             agent.GetComponent<Navigation>().UpdateLookRotation();
         }
@@ -112,13 +110,14 @@ public class QueueLogic : MonoBehaviour, IQueue {
             foreach (GameObject agent in queue) { 
                 // Tell remaining queued agent to move forward in 
                 Navigation agentNav = agent.GetComponent<Navigation>();
-                //Log("Ordering " + agentNav.AgentName + " to move and face goal");
                 agent.GetComponent<Navigation>().ResumeAgentSpeed();
             }
         }
     }
 
-    // Only called if emergency signaled or the event ends.
+    /// <summary>
+    /// Only call if emergency signaled or the event ends.
+    /// </summary>
     public void DequeueAll() {
         Log("Dequeuing all " + queue.Count + " agents.");
         while (queue.Count > 0) {
@@ -126,12 +125,13 @@ public class QueueLogic : MonoBehaviour, IQueue {
         }
     }
 
+    /// <returns>the name of this queue</returns>
     public string GetQueueName() {
         return queueName;
     }
 
-    //Returns position of last agent in line
-    Vector3 getLast(){
+    // Returns position of last agent in line
+    private Vector3 getLast(){
 		return queue[queue.Count-1].transform.position;
 	}
 

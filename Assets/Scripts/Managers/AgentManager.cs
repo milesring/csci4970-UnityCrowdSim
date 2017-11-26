@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
@@ -13,15 +11,13 @@ public class AgentManager : MonoBehaviour {
     /// </summary>
 	public int agentAmount;
 	private int agentCount;
-	EventManager eventManager;
+	private EventManager eventManager;
 
-	// Use this for initialization
 	void Start () {
 		agentCount = 0;
 		eventManager = GameObject.Find ("EventManager").GetComponent<EventManager> ();
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		
 	}
@@ -42,7 +38,7 @@ public class AgentManager : MonoBehaviour {
     
     /// <returns>true if agent generation is allowed, otherwise false</returns>
 	public bool spawnAllowed(){
-        if (agentCount >= agentAmount || eventManager.eventOver) {
+        if (agentCount >= agentAmount || eventManager.IsEventOver) {
             return false;
         } else {
             return true;
@@ -58,9 +54,10 @@ public class AgentManager : MonoBehaviour {
         {
             agents [i].GetComponent<Navigation> ().endEvent ();
             // speeds up by randomly by 1.5x minimum, 3x maximum
-            if (emergency) agents[i].GetComponent<NavMeshAgent>().speed *= (Random.value+1)*1.5f;
-            //Debug.Log ("Agent " + i + " notified of event ending");
-            eventManager.eventOver = true;
+            if (emergency) {
+                agents[i].GetComponent<NavMeshAgent>().speed *= (Random.value + 1) * 1.5f;
+            }
+            eventManager.IsEventOver = true;
 		}
 
 	}
