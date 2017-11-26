@@ -24,7 +24,11 @@ public class Navigation : MonoBehaviour {
     /// </summary>
    	public float destinationPadding;
     private float tripTimer;
-    private bool leaving;
+    public bool IsLeaving
+    {
+        get;
+        private set;
+    }
 
     [Header("Venue Goals")]
     public float goalTimeMin;
@@ -90,14 +94,14 @@ public class Navigation : MonoBehaviour {
 
         inVenue = false;
         distracted = false;
-        leaving = false;
+        IsLeaving = false;
         eventOver = false;
         tripTimer = 0.0f;
         distractionTimer = 0.0f;
         AtGoal = false;
         InQueue = false;
 
-        // FIXME this is unused
+        // TODO this is unused
         goalTime = Random.Range(goalTimeMin, goalTimeMax);
         distractionValue = Random.Range(0.4f, 1.0f);
 
@@ -113,9 +117,9 @@ public class Navigation : MonoBehaviour {
         //increase total alive timer, used later for statistics
         tripTimer += Time.deltaTime;
 
-        if (eventOver && !leaving) {
+        if (eventOver && !IsLeaving) {
             AtGoal = false;
-            leaving = true;
+            IsLeaving = true;
             goalDestination = findNearestDestination();
             agent.destination = goalDestination.transform.position;
         }
@@ -149,16 +153,15 @@ public class Navigation : MonoBehaviour {
     private void destinationUpdate() {
         if (AtGoal) {
             if (BeingServed) {
-                // Still under control of a queue
+                // Agent under control of a queue
             } else {
                 UpdateVisitedGoal();
                 AtGoal = false;
                 goalDestination = findNearestDestination();
                 agent.destination = goalDestination.transform.position;
             }
-            // Agent waiting at goal for new orders
         } else if (InQueue) {
-            // Agent waiting in queue, and the queue 
+            // Agent waiting in queue, and the queue controls the agent
         } else if ((agent.destination - this.transform.position).sqrMagnitude < Mathf.Pow(destinationPadding, 2)) {
             // If the squared distance between the agent's destination and the agent is less that the squared
             // destination padding, then the agent has reached their current goal.
@@ -166,7 +169,9 @@ public class Navigation : MonoBehaviour {
         }
     }
 
+    // This method is called if it is determined this agent has reached its goal during the destination update
     private void DestinationUpdateAtGoal() {
+        // Separate the logic depeneding on if we are in the venue or not.
         if (!inVenue) {
             if (!eventOver) {
                 // If agent is not in venue and the event has not ended, the agent has reached an entrance
@@ -177,8 +182,8 @@ public class Navigation : MonoBehaviour {
                 agent.destination = goalDestination.transform.position;
             }
         } else {
-            if (eventOver || leaving) {
-                // If the event is over and we are in the venue, our only destinations are exits.
+            if (eventOver || IsLeaving) {
+                // If the event is over or we are leaving, we are in the venue, we
                 inVenue = false;
                 Debug.Log(AgentName + " reached exit. Leaving the venue.");
                 goalDestination = findNearestDestination();
@@ -211,7 +216,7 @@ public class Navigation : MonoBehaviour {
         List<GameObject> locationsList = new List<GameObject>();
 
         if (!inVenue) {
-            if (eventOver || leaving) {
+            if (eventOver || IsLeaving) {
                 // Agent has left and must be DESTROYED
                 endPos = locationManager.FindNearestDestroyRadius(transform.position);
                 GameObject temp = new GameObject();
@@ -222,7 +227,7 @@ public class Navigation : MonoBehaviour {
             }
         } else {
             // Agent in venue
-            if (eventOver || leaving) {
+            if (eventOver || IsLeaving) {
                 // Agent needs to leave
                 Debug.Log(AgentName + " is finding an exit");
                 locationsList = locationManager.GetLocations(LocationTypes.EXIT);
@@ -233,7 +238,7 @@ public class Navigation : MonoBehaviour {
                 if (locationsList.Count == 0) {
                     // If an agent has visited all goals in venue, leave
                     Debug.Log(AgentName + " has visited all goals and is now leaving.");
-                    leaving = true;
+                    IsLeaving = true;
                     locationsList = locationManager.GetLocations(LocationTypes.EXIT);
                 } else {
                     Debug.Log(AgentName + " has finished at a goal and is choosing a new random goal.");
@@ -286,11 +291,6 @@ public class Navigation : MonoBehaviour {
         return goalDestination;
     }
 
-    /// <returns>true is the agent is leaving the venue, otherwise false</returns>
-    public bool IsLeaving() {
-        return leaving;
-    }
-
     internal void UpdateVisitedGoal() {
         visitedGoals.Add(goalDestination);
     }
@@ -318,7 +318,7 @@ public class Navigation : MonoBehaviour {
     // Resumes the agent's previous speed
     internal void ResumeAgentSpeed() {
         agent.isStopped = false;
-        // Only reset the agent's speed if the agen'ts speed is 0. This allows emergencies to speed the agent up
+        // Only reset the agent's speed if the agent's speed is 0. This allows emergencies to speed the agent up
         if (agent.speed == 0.0f) {
             agent.speed = speed;
         }
