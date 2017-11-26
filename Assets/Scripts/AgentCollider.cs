@@ -44,13 +44,18 @@ public class AgentCollider : MonoBehaviour {
             } else if ((otherAgent.AtGoal || otherAgent.BeingServed || otherAgent.isInQueue())
                    && otherAgent.GetDestination() == thisAgent.GetDestination()) {
 
-                // If this agent is not in a queue and we collide with an agent that is at its goal or in a
-                // queue for its goal AND this agent's destination is the same, queue this agent
-                Debug.Log(thisAgent.AgentName + " and " + otherAgent.AgentName
-                    + " have same goal. Adding agent " + thisAgent.AgentName + " in queue behind "
-                    + otherAgent.AgentName);
-
-                thisAgent.GetDestination().GetComponent<QueueLogic>().Enqueue(this.gameObject);
+                IQueue queue = thisAgent.GetDestination().GetComponent<IQueue>();
+                if (queue != null) {
+                    /*
+                     * If this agent is not in a queue and we collide with an agent that is at its goal 
+                     * (which is a queue) or in a queue for its goal AND this agent's destination is the 
+                     * same, queue this agent
+                     */
+                    Debug.Log(thisAgent.AgentName + " and " + otherAgent.AgentName
+                        + " have same goal. Adding agent " + thisAgent.AgentName + " in queue behind "
+                        + otherAgent.AgentName);
+                    queue.Enqueue(this.gameObject);
+                }
             }
         }
     }
