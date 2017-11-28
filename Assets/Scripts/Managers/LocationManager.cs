@@ -1,15 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// This class manages a variety of important locations and provides ease of access to the arrays
+/// This class manages a variety of locations and provides ease of access to the lists
 /// </summary>
-
 public class LocationManager : MonoBehaviour {
-    private GameObject[] entrances;
-	private GameObject[] exits;
-	private GameObject[] goals;
+    private List<GameObject> entrances;
+	private List<GameObject> exits;
+	private List<GameObject> goals;
 	public float centerRadius;
 	private GameObject center;
 
@@ -21,37 +19,35 @@ public class LocationManager : MonoBehaviour {
 		center = GameObject.Find (LocationTypes.BUILDING_CENTER.ToString());
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		
 	}
 
-	GameObject[] FindLocations(LocationTypes type) {
-		//Finds all locations with the passed in tag
-		GameObject[] tempArray = GameObject.FindGameObjectsWithTag(type.ToString());
-		return tempArray;
+    //Finds all locations with the passed in tag, then converts the returned array to a list
+    private List<GameObject> FindLocations(LocationTypes type) {
+        return new List<GameObject>(GameObject.FindGameObjectsWithTag(type.ToString()));
 	}
 
     /// <summary>
-    /// Given a tag, return an array of the tag's location type
+    /// Given a type, return a list of the location type
     /// </summary>
-    /// <param name="tag">the type of location to return</param>
-    /// <returns>an array of tag-locations</returns>
-	public GameObject[] GetLocations(LocationTypes type) {
+    /// <param name="type">the type of location to return</param>
+    /// <returns>a list of tag-locations</returns>
+	public List<GameObject> GetLocations(LocationTypes type) {
         if (type == LocationTypes.ENTRANCE) {
-            return entrances;
+            return new List<GameObject>(entrances);
         } else if (type == LocationTypes.GOAL) {
-            return goals;
+            return new List<GameObject>(goals);
         } else if (type == LocationTypes.EXIT) {
-            return exits;
+            return new List<GameObject>(exits);
         } else {
+            Debug.Log("Error choosing a location list to return.");
             return null;
         }
 	}
 
     /// <summary>
-    /// Given an agent's position, find the nearest location that will destroy the agent's
-    /// GameObject
+    /// Given an agent's position, find the nearest location that will destroy the agent's GameObject
     /// </summary>
     /// <param name="agentPos">an agent's position</param>
     /// <returns>the nearest location that will destroy the agent</returns>
@@ -60,8 +56,6 @@ public class LocationManager : MonoBehaviour {
 		float distance = heading.magnitude;
 		Vector3 direction = heading / distance;
 
-		//Debug.Log ("Direction: " + (direction*centerRadius));
-		//Vector3 destroyPoint = -heading * centerRadius;
 		return direction*centerRadius;
 	}
 }
