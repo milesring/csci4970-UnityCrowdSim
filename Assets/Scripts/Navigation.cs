@@ -60,6 +60,7 @@ public class Navigation : MonoBehaviour {
 
     private float speed;
     private bool inVenue;
+	public bool emergency;
 
     // true if the agent is at its goal
     internal bool AtGoal {
@@ -93,6 +94,7 @@ public class Navigation : MonoBehaviour {
         locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
 
         inVenue = false;
+		emergency = false;
         distracted = false;
         IsLeaving = false;
         eventOver = false;
@@ -228,9 +230,16 @@ public class Navigation : MonoBehaviour {
         } else {
             // Agent in venue
             if (eventOver || IsLeaving) {
-                // Agent needs to leave
-                Debug.Log(AgentName + " is finding an exit");
-                locationsList = locationManager.GetLocations(LocationTypes.EXIT);
+				if (emergency) {
+					//AGENT IS PANICING
+					Debug.Log (AgentName + " is finding an exit or entrance for an emergency");
+					locationsList = locationManager.GetLocations (LocationTypes.ENTRANCE);
+					locationsList.AddRange (locationManager.GetLocations (LocationTypes.EXIT));
+				} else {
+					// Agent needs to leave CALMLY
+					Debug.Log (AgentName + " is finding an exit");
+					locationsList = locationManager.GetLocations (LocationTypes.EXIT);
+				}
             } else {
                 // Continue finding goals to do in venue
                 locationsList = locationManager.GetLocations(LocationTypes.GOAL);

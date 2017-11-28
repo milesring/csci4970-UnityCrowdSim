@@ -56,6 +56,7 @@ public class AgentManager : MonoBehaviour {
             // speeds up by randomly by 1.5x minimum, 3x maximum
             if (emergency) {
                 agents[i].GetComponent<NavMeshAgent>().speed *= (Random.value + 1) * 1.5f;
+				agents [i].GetComponent<Navigation> ().emergency = true;
             }
             eventManager.IsEventOver = true;
 		}

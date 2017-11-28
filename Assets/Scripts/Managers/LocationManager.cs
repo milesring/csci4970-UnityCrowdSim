@@ -18,10 +18,6 @@ public class LocationManager : MonoBehaviour {
 		goals = FindLocations(LocationTypes.GOAL);
 		center = GameObject.Find (LocationTypes.BUILDING_CENTER.ToString());
 	}
-	
-	void Update () {
-		
-	}
 
     //Finds all locations with the passed in tag, then converts the returned array to a list
     private List<GameObject> FindLocations(LocationTypes type) {
