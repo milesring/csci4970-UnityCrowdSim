@@ -25,10 +25,10 @@ public class Settings : MonoBehaviour {
 
     private void OnLevelWasLoaded(int level)
     {
-        if (level == 1)
-        {
-            agentManager = GameObject.Find("AgentManager").GetComponent<AgentManager>();
+		if (level == 1) {
+			agentManager = GameObject.Find ("AgentManager").GetComponent<AgentManager> ();
 			agentManager.agentAmount = (int)numAgents;
+		}
             
     }
 
