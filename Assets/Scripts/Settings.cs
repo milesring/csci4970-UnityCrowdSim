@@ -6,6 +6,8 @@ public class Settings : MonoBehaviour {
 
     // Use this for initialization
     AgentManager agentManager;
+	float numAgents;
+	float speed;
 
     void Awake()
     {
@@ -26,23 +28,17 @@ public class Settings : MonoBehaviour {
         if (level == 1)
         {
             agentManager = GameObject.Find("AgentManager").GetComponent<AgentManager>();
-            agentManager.agentAmount = 50;
-        }
+			agentManager.agentAmount = (int)numAgents;
             
     }
 
-    void setNumAgents(int numAgents)
+    public void setNumAgents(float value)
     {
-        agentManager.agentAmount = numAgents;
+		numAgents = value;
     }
 
-    void setSpeed(float speed)
+    public void setSpeed(float value)
     {
-        GameObject[] agents = GameObject.FindGameObjectsWithTag("Agent");
-        
-        for(int i = 0; i < agents.Length; ++i)
-        {
-            agents[i].GetComponent<UnityEngine.AI.NavMeshAgent>().speed = speed;
-        }
+		speed = value;
     }
 }
