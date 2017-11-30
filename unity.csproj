@@ -93,6 +93,7 @@
     <Compile Include="Assets\Scripts\POI.cs" />
     <Compile Include="Assets\Scripts\QueueLogic.cs" />
     <Compile Include="Assets\Scripts\QuitOnClick.cs" />
+    <Compile Include="Assets\Scripts\Settings.cs" />
     <Compile Include="Assets\Scripts\ShowSliderValue.cs" />
   </ItemGroup>
   <ItemGroup>
