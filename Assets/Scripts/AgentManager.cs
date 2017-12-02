@@ -10,20 +10,27 @@ public class AgentManager : MonoBehaviour {
     /// <summary>
     /// The maximum number of agents allowed in the environment
     /// </summary>
-	public int agentAmount;
+	private int agentAmount;
+	public float agentSpeed;
 	private int agentCount;
 	EventManager eventManager;
+	Settings settings;
 
 	// Use this for initialization
 	void Start () {
 		agentCount = 0;
+		agentSpeed = 0f;
 		eventManager = GameObject.Find ("EventManager").GetComponent<EventManager> ();
+		settings = GameObject.Find ("Settings").GetComponent<Settings> ();
+		if (settings) {
+			agentAmount = (int)settings.numAgents;
+		} else {
+			agentAmount = 30;
+		}
+		Debug.Log (agentAmount);
+		Debug.Log ("Speed: " + settings.speed);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
 
     /// <summary>
     /// Increments the number of agents in the environment

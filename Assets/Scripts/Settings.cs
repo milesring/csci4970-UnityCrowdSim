@@ -6,39 +6,21 @@ public class Settings : MonoBehaviour {
 
     // Use this for initialization
     AgentManager agentManager;
-	float numAgents;
-	float speed;
+	public float numAgents;
+	public float speed;
 
     void Awake()
     {
         DontDestroyOnLoad(transform.gameObject);
     }
 
-    void Start () {
-        
-    }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-    private void OnLevelWasLoaded(int level)
+	public void setNumAgents(UnityEngine.UI.Slider slider)
     {
-		if (level == 1) {
-			agentManager = GameObject.Find ("AgentManager").GetComponent<AgentManager> ();
-			agentManager.agentAmount = (int)numAgents;
-		}
-            
+		numAgents = slider.value;
     }
 
-    public void setNumAgents(float value)
+	public void setSpeed(UnityEngine.UI.Slider slider)
     {
-		numAgents = value;
-    }
-
-    public void setSpeed(float value)
-    {
-		speed = value;
+		speed = slider.value;
     }
 }
