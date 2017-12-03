@@ -60,6 +60,8 @@ public class Navigation : MonoBehaviour {
 
     private float speed;
     private bool inVenue;
+	private Settings settings;
+    private GameObject GoalDestination;
 	public bool emergency;
 
     // true if the agent is at its goal
@@ -92,6 +94,7 @@ public class Navigation : MonoBehaviour {
         agentNumber++;
 
         locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
+		settings = GameObject.Find ("Settings").GetComponent<Settings> ();
 
         inVenue = false;
 		emergency = false;
@@ -111,7 +114,8 @@ public class Navigation : MonoBehaviour {
         goalDestination = findNearestDestination();
         agent.destination = goalDestination.transform.position;
 
-        speed = agent.speed;
+		speed = Random.Range(settings.speed-0.5f,settings.speed+0.5f);
+		agent.speed = speed;
     }
 
     // Update is called once per frame
