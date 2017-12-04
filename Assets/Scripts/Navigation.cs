@@ -60,7 +60,6 @@ public class Navigation : MonoBehaviour {
 
     private float speed;
     private bool inVenue;
-	private Settings settings;
     private GameObject GoalDestination;
 	public bool emergency;
 
@@ -93,11 +92,8 @@ public class Navigation : MonoBehaviour {
         AgentName = string.Format("Agent {0}", agentNumber.ToString("D3"));
         agentNumber++;
 
-        locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
-		settings = GameObject.Find ("Settings").GetComponent<Settings> ();
-
         inVenue = false;
-		emergency = false;
+        emergency = false;
         distracted = false;
         IsLeaving = false;
         eventOver = false;
@@ -105,6 +101,8 @@ public class Navigation : MonoBehaviour {
         distractionTimer = 0.0f;
         AtGoal = false;
         InQueue = false;
+
+        locationManager = GameObject.Find("LocationManager").GetComponent<LocationManager>();
 
         // TODO this is unused
         goalTime = Random.Range(goalTimeMin, goalTimeMax);
@@ -114,7 +112,15 @@ public class Navigation : MonoBehaviour {
         goalDestination = findNearestDestination();
         agent.destination = goalDestination.transform.position;
 
-		speed = Random.Range(settings.speed-0.5f,settings.speed+0.5f);
+        GameObject settingsObject = GameObject.Find("Settings");
+        if (settingsObject != null) {
+            Settings settings = settingsObject.GetComponent<Settings>();
+            speed = Random.Range(settings.speed - 0.5f, settings.speed + 0.5f);
+        } else {
+            AgentManager agentManager = GameObject.Find("AgentManager").GetComponent<AgentManager>();
+            speed = agentManager.agentSpeed;
+        }
+
 		agent.speed = speed;
     }
 

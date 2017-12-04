@@ -19,10 +19,9 @@ public class GenerateAgents : MonoBehaviour {
 
     private int lastAgentSecond = 0;
 	private float sceneTime;
-	private Settings settings;
+
 	void Start(){
 		sceneTime = 0f;
-		settings = GameObject.Find ("Settings").GetComponent<Settings> ();
 	}
 
 	// Update is called once per frame

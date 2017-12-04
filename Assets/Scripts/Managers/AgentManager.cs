@@ -6,27 +6,45 @@ using UnityEngine.AI;
 /// agents in the environment
 /// </summary>
 public class AgentManager : MonoBehaviour {
-    /// <summary>
-    /// The maximum number of agents allowed in the environment
-    /// </summary>
-	private int agentAmount;
-	public float agentSpeed;
 	private int agentCount;
 	private EventManager eventManager;
-	Settings settings;
+
+    /// <summary>
+    /// The default maximum number of agents allowed in the environment
+    /// </summary>
+	public int defaultAgentAmount;
+    /// <summary>
+    /// The default speed all spawned agents should move
+    /// </summary>
+    public float defaultAgentSpeed;
+
+    internal int agentAmount
+    {
+        get;
+        private set;
+    }
+
+    internal float agentSpeed
+    {
+        get;
+        private set;
+    }
 
 	void Start () {
-		agentCount = 0;
-		agentSpeed = 0f;
 		eventManager = GameObject.Find ("EventManager").GetComponent<EventManager> ();
-		settings = GameObject.Find ("Settings").GetComponent<Settings> ();
-		if (settings) {
-			agentAmount = (int)settings.numAgents;
-		} else {
-			agentAmount = 30;
-		}
-		Debug.Log (agentAmount);
-		Debug.Log ("Speed: " + settings.speed);
+
+        GameObject settingsObject = GameObject.Find("Settings");
+        if (settingsObject != null) {
+            Settings settings = settingsObject.GetComponent<Settings>();
+            agentAmount = (int)settings.numAgents;
+            agentSpeed = (float)settings.speed;
+        } else {
+            agentAmount = defaultAgentAmount;
+            agentSpeed = defaultAgentSpeed;
+        }
+
+		Debug.Log ("Max agent count: " + agentAmount);
+		Debug.Log ("Speed: " + agentSpeed);
 	}
 
     /// <summary>
