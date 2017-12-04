@@ -24,6 +24,10 @@ public class HUD : MonoBehaviour {
     // access to manager functions
     AgentManager agentManager;
     EventManager eventManager;
+    WriteDataToFile writeToFile;
+
+    bool eventEnded;
+    bool evacuationComplete;
 
     // text formatters
 	readonly string PATRON_NUM_FORMAT = "Number of Patrons: {0}";
@@ -53,6 +57,8 @@ public class HUD : MonoBehaviour {
         agentManager = GameObject.Find("AgentManager").GetComponent<AgentManager>();
         eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
         selectedAgent = GameObject.Find("CrowdAgent(Clone)");
+        writeToFile = GetComponent<WriteDataToFile>();
+        writeToFile.WriteString(string.Format("Start of scene. Event Time: {0} seconds.", eventManager.getEventTime()));
     }
 
     /// <summary>
@@ -85,6 +91,7 @@ public class HUD : MonoBehaviour {
         agentManager.notifyAgents(true);
         eventManager.SignalEmergency();
         emergencyButton.interactable = false;
+        writeToFile.WriteString(string.Format("An emergency has occured. Number of patrons involved: {0}", agentManager.AgentCount()));
     }
 
     /// <summary>
@@ -92,6 +99,7 @@ public class HUD : MonoBehaviour {
     /// </summary>
     void resetClick()
     {
+        writeToFile.WriteString(string.Format("Scene has been reset. Patrons: {0}, Event Time Remaining: {1} seconds", agentManager.AgentCount(), eventManager.getEventTime()));
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -102,15 +110,30 @@ public class HUD : MonoBehaviour {
 
         // display event timer, red if event is over
         double eventTimer = System.Math.Round(eventManager.getEventTime() - eventManager.getEventTimer());
-        if (eventTimer <= 0) eventTimerText.color = Color.red;
+        if (!eventEnded && eventTimer <= 0)
+        {
+            eventEnded = true;
+            eventTimerText.color = Color.red;
+            writeToFile.WriteString(string.Format("Event has ended. Number of Patrons: {0}", agentManager.AgentCount()));
+        }
         eventTimerText.text = string.Format(EVENT_TIMER_FORMAT, System.Math.Round(eventManager.getEventTime() - eventManager.getEventTimer(), 2));
         
         // Display evacuation timer if emergency button was pressed
         if(!emergencyButton.interactable)
         {
-            if(agentManager.AgentCount() > 0)
+            if (agentManager.AgentCount() > 0)
+            {
                 emergencyTimerText.text = string.Format(EMERGENCY_TIMER_FORMAT, System.Math.Round(emergencyTimer += Time.deltaTime, 2));
-            else emergencyTimerText.text = string.Format(EMERGENCY_TIMER_FORMAT, System.Math.Round(emergencyTimer, 2));
+            }
+            else
+            {
+                emergencyTimerText.text = string.Format(EMERGENCY_TIMER_FORMAT, System.Math.Round(emergencyTimer, 2));
+                if(!evacuationComplete)
+                {
+                    evacuationComplete = true;
+                    writeToFile.WriteString(string.Format("Evacutation complete! Evacuation time: {0} seconds", eventManager.getEventTimer()));
+                }
+            }
         }
 
         // have main camera follow an agent if currentPOV is set to agent view
