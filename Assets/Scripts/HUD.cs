@@ -80,7 +80,7 @@ public class HUD : MonoBehaviour {
     /// <summary>
     /// What to do when the emergency button is clicked. It notifies all agents that the event is over.
     /// </summary>
-    void emergencyClick()
+    public void emergencyClick()
     {
         agentManager.notifyAgents(true);
         eventManager.SignalEmergency();
