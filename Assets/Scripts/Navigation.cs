@@ -204,6 +204,8 @@ public class Navigation : MonoBehaviour {
                 Debug.Log(AgentName + " reached exit. Leaving the venue.");
                 goalDestination = findNearestDestination();
                 agent.destination = goalDestination.transform.position;
+				//agent.destination = agent.gameObject.transform.forward*2f;
+
             } else {
                 Debug.Log(AgentName + " reached goal.");
                 if (!InQueue && goalDestination.GetComponent<IQueue>() != null) {
