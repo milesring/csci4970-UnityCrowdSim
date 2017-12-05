@@ -115,13 +115,17 @@ public class Navigation : MonoBehaviour {
         GameObject settingsObject = GameObject.Find("Settings");
         if (settingsObject != null) {
             Settings settings = settingsObject.GetComponent<Settings>();
-            speed = Random.Range(settings.speed - 0.5f, settings.speed + 0.5f);
+            speed = RandomSpeed(settings.speed, .5f);
         } else {
             AgentManager agentManager = GameObject.Find("AgentManager").GetComponent<AgentManager>();
-            speed = agentManager.agentSpeed;
+            speed = RandomSpeed(agentManager.agentSpeed, .5f);
         }
 
 		agent.speed = speed;
+    }
+
+    private float RandomSpeed(float baseSpeed, float variance) {
+        return Random.Range(baseSpeed - 0.5f, baseSpeed + 0.5f);
     }
 
     // Update is called once per frame
