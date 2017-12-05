@@ -18,27 +18,30 @@ public class GenerateAgents : MonoBehaviour {
 	public AgentManager agentManager;
 
     private int lastAgentSecond = 0;
+	private float sceneTime;
 
-    // Use this for initialization
-	void Start () {
-
+	void Start(){
+		sceneTime = 0f;
 	}
 
 	// Update is called once per frame
 	void Update () {
+		sceneTime += Time.deltaTime;
 		if (agentManager.spawnAllowed ()) {
-			if (Time.time > lastAgentSecond + 1) {
-			
+			if (sceneTime > lastAgentSecond + 1) {
 				lastAgentSecond++;
+				Transform agent;
+				
 				if (randomLocation) {
 					// Spawns AgentToGenerate in random position near the AgentGenerator
-					Instantiate (AgentToGenerate,
+					agent = Instantiate (AgentToGenerate,
 						this.transform.position + new Vector3 (Random.value * 2 - 1, 0, Random.value * 2 - 1) * 10, Quaternion.identity);	
 				} else {
 					// Spawns AgentToGenerate in fixed position near the AgentGenerator
-					Instantiate (AgentToGenerate,
+					agent = Instantiate (AgentToGenerate,
 						this.transform.position, Quaternion.identity);
 				}
+					
 				agentManager.agentSpawned ();
 			}
 		}

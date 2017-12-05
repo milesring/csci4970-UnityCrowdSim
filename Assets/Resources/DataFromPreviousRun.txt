@@ -1,0 +1,4 @@
+12/3/2017 9:02:04 PM
+Scene has been reset. Patrons: 0, Event Time Remaining: 300.0000 seconds
+12/3/2017 9:03:36 PM
+Start of scene. Event Time: 300 seconds.
