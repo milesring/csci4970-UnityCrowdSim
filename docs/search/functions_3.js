@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['findnearestdestroyradius',['FindNearestDestroyRadius',['../class_location_manager.html#af9294465e64fd16ffd725b4967b4eef8',1,'LocationManager']]]
+  ['isoutside',['isOutside',['../class_navigation.html#a71141775c804c0125e51b4f51ca1a823',1,'Navigation']]]
 ];

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['dequeue',['Dequeue',['../class_queue_logic.html#ae3082d9c932fbefc26fc9d2e58bb0548',1,'QueueLogic']]],
-  ['destroyagents',['destroyAgents',['../class_agent_manager.html#a4b625a8605ff9d1079230860a6eead85',1,'AgentManager']]],
-  ['distract',['distract',['../class_navigation.html#aef622530f5c226437c3c25e42a30690e',1,'Navigation']]]
+  ['endevent',['endEvent',['../class_navigation.html#aab01c345ce1be5a69f68c29b9b193d70',1,'Navigation']]],
+  ['enqueue',['Enqueue',['../class_queue_logic.html#a4a35cd223087dd06f39066117e985336',1,'QueueLogic']]]
 ];

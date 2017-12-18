@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['randomlocation',['randomLocation',['../class_generate_agents.html#a5d1e7b30f7fbcb0eaff64902a0e668d2',1,'GenerateAgents']]]
+  ['maxqueueworktime',['maxQueueWorkTime',['../class_queue_logic.html#ab0b7ba6d096d151db492ada8b4e0070a',1,'QueueLogic']]]
 ];

@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['findnearestdestroyradius',['FindNearestDestroyRadius',['../class_location_manager.html#af9294465e64fd16ffd725b4967b4eef8',1,'LocationManager']]]
+  ['generateagents',['GenerateAgents',['../class_generate_agents.html',1,'']]],
+  ['getdestination',['GetDestination',['../class_navigation.html#a6fbfaa2b59dc50d145d9fadd39551371',1,'Navigation']]],
+  ['getqueuename',['GetQueueName',['../class_queue_logic.html#a512a155991a866106351157c1038145b',1,'QueueLogic']]]
 ];

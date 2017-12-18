@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['length',['Length',['../class_queue_logic.html#abb52119e722972ef77d0bf028a6c7769',1,'QueueLogic']]],
-  ['locationmanager',['LocationManager',['../class_location_manager.html',1,'']]]
+  ['maxqueueworktime',['maxQueueWorkTime',['../class_queue_logic.html#ab0b7ba6d096d151db492ada8b4e0070a',1,'QueueLogic']]],
+  ['mouselook',['MouseLook',['../class_mouse_look.html',1,'']]]
 ];

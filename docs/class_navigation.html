@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Team 2: Team 2: Navigation Class Reference</title>
+<title>Unity Crowds: Navigation Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Team 2: Team 2
+   <div id="projectname">Unity Crowds
    </div>
   </td>
  </tr>
@@ -61,6 +61,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#properties">Properties</a> &#124;
 <a href="class_navigation-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">Navigation Class Reference</div>  </div>
@@ -80,6 +81,12 @@ Inheritance diagram for Navigation:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a16fdf74291306300a59c72f20e73cf9e"><td class="memItemLeft" align="right" valign="top"><a id="a16fdf74291306300a59c72f20e73cf9e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setInQueue</b> (bool isInQueue)</td></tr>
+<tr class="separator:a16fdf74291306300a59c72f20e73cf9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82d0e9c2856fdf56aa1ba65816052d0c"><td class="memItemLeft" align="right" valign="top"><a id="a82d0e9c2856fdf56aa1ba65816052d0c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInQueue</b> ()</td></tr>
+<tr class="separator:a82d0e9c2856fdf56aa1ba65816052d0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef622530f5c226437c3c25e42a30690e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_navigation.html#aef622530f5c226437c3c25e42a30690e">distract</a> ()</td></tr>
 <tr class="memdesc:aef622530f5c226437c3c25e42a30690e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calling this method distracts the agent, causing the agent to stop for a predetermined amount of time. Once the distraction time has expired, the agent will continue to its previous destination.  <a href="#aef622530f5c226437c3c25e42a30690e">More...</a><br /></td></tr>
 <tr class="separator:aef622530f5c226437c3c25e42a30690e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -91,22 +98,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a71141775c804c0125e51b4f51ca1a823"><td class="mdescLeft">&#160;</td><td class="mdescRight"><dl class="section return"><dt>Returns</dt><dd>true if the agent is outside the venue, otherwise false</dd></dl>
 <br /></td></tr>
 <tr class="separator:a71141775c804c0125e51b4f51ca1a823"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1df91f070febd439d7a1bdeac7902cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_navigation.html#ac1df91f070febd439d7a1bdeac7902cc">AtGoal</a> (bool value)</td></tr>
-<tr class="memdesc:ac1df91f070febd439d7a1bdeac7902cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether or not the agent has reached its goal  <a href="#ac1df91f070febd439d7a1bdeac7902cc">More...</a><br /></td></tr>
-<tr class="separator:ac1df91f070febd439d7a1bdeac7902cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7c7f7a59502f9effc69ce0f9388adb7"><td class="memItemLeft" align="right" valign="top"><a id="ae7c7f7a59502f9effc69ce0f9388adb7"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_navigation.html#ae7c7f7a59502f9effc69ce0f9388adb7">IsAtGoal</a> ()</td></tr>
-<tr class="memdesc:ae7c7f7a59502f9effc69ce0f9388adb7"><td class="mdescLeft">&#160;</td><td class="mdescRight"><dl class="section return"><dt>Returns</dt><dd>true if the agent is at its goal, otherwise false</dd></dl>
-<br /></td></tr>
-<tr class="separator:ae7c7f7a59502f9effc69ce0f9388adb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a055dd486980e62a4c0f8e1fa9fab3bbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_navigation.html#a055dd486980e62a4c0f8e1fa9fab3bbb">InQueue</a> (bool value)</td></tr>
-<tr class="memdesc:a055dd486980e62a4c0f8e1fa9fab3bbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether or not the agent is in a queue  <a href="#a055dd486980e62a4c0f8e1fa9fab3bbb">More...</a><br /></td></tr>
-<tr class="separator:a055dd486980e62a4c0f8e1fa9fab3bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ae912045560d546f4d47a151697cadb"><td class="memItemLeft" align="right" valign="top"><a id="a9ae912045560d546f4d47a151697cadb"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_navigation.html#a9ae912045560d546f4d47a151697cadb">IsInQueue</a> ()</td></tr>
-<tr class="memdesc:a9ae912045560d546f4d47a151697cadb"><td class="mdescLeft">&#160;</td><td class="mdescRight"><dl class="section return"><dt>Returns</dt><dd>true if the agent is in a queue, otherwise false</dd></dl>
-<br /></td></tr>
-<tr class="separator:a9ae912045560d546f4d47a151697cadb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fbfaa2b59dc50d145d9fadd39551371"><td class="memItemLeft" align="right" valign="top"><a id="a6fbfaa2b59dc50d145d9fadd39551371"></a>
 GameObject&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_navigation.html#a6fbfaa2b59dc50d145d9fadd39551371">GetDestination</a> ()</td></tr>
 <tr class="memdesc:a6fbfaa2b59dc50d145d9fadd39551371"><td class="mdescLeft">&#160;</td><td class="mdescRight"><dl class="section return"><dt>Returns</dt><dd>the destination of the agent</dd></dl>
@@ -127,44 +118,25 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>goalTimeMax</b></td>
 <tr class="memitem:a2690bd66b4372c7e504b2531d8eecb55"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_navigation.html#a2690bd66b4372c7e504b2531d8eecb55">distractionTime</a></td></tr>
 <tr class="memdesc:a2690bd66b4372c7e504b2531d8eecb55"><td class="mdescLeft">&#160;</td><td class="mdescRight">How long an agent will be distracted for  <a href="#a2690bd66b4372c7e504b2531d8eecb55">More...</a><br /></td></tr>
 <tr class="separator:a2690bd66b4372c7e504b2531d8eecb55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa38e6220a578f9d3e2b203085a46d4b0"><td class="memItemLeft" align="right" valign="top"><a id="aa38e6220a578f9d3e2b203085a46d4b0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>emergency</b></td></tr>
+<tr class="separator:aa38e6220a578f9d3e2b203085a46d4b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="properties"></a>
+Properties</h2></td></tr>
+<tr class="memitem:aad89dad94a0bfb21ed33df06da75d69b"><td class="memItemLeft" align="right" valign="top"><a id="aad89dad94a0bfb21ed33df06da75d69b"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>Name</b><code> [get, set]</code></td></tr>
+<tr class="separator:aad89dad94a0bfb21ed33df06da75d69b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92e591962694ed962fcef2232c326988"><td class="memItemLeft" align="right" valign="top"><a id="a92e591962694ed962fcef2232c326988"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>AgentName</b><code> [get, set]</code></td></tr>
+<tr class="separator:a92e591962694ed962fcef2232c326988"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f92b4eb87ea0bfb22eab63df10f8e82"><td class="memItemLeft" align="right" valign="top"><a id="a4f92b4eb87ea0bfb22eab63df10f8e82"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsLeaving</b><code> [get]</code></td></tr>
+<tr class="separator:a4f92b4eb87ea0bfb22eab63df10f8e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class controls the navigation behavior of an agent. This includes updating the agent's destination and tracking various status values such as the agent's distraction </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ac1df91f070febd439d7a1bdeac7902cc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1df91f070febd439d7a1bdeac7902cc">&#9670;&nbsp;</a></span>AtGoal()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Navigation.AtGoal </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>value</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Sets whether or not the agent has reached its goal </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">value</td><td>true if agent has reached its goal, otherwise false</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="aef622530f5c226437c3c25e42a30690e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aef622530f5c226437c3c25e42a30690e">&#9670;&nbsp;</a></span>distract()</h2>
 
@@ -219,40 +191,6 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>goalTimeMax</b></td>
 
 </div>
 </div>
-<a id="a055dd486980e62a4c0f8e1fa9fab3bbb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a055dd486980e62a4c0f8e1fa9fab3bbb">&#9670;&nbsp;</a></span>InQueue()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Navigation.InQueue </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>value</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Sets whether or not the agent is in a queue </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">value</td><td>true if agent is in a queue, otherwise false</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a7b5c25d3f75afd4f9f09dde42b12c55f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7b5c25d3f75afd4f9f09dde42b12c55f">&#9670;&nbsp;</a></span>destinationPadding</h2>
@@ -287,7 +225,7 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>goalTimeMax</b></td>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>Documents/unitycrowds/Assets/Scripts/Navigation.cs</li>
+<li>Assets/Scripts/Navigation.cs</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

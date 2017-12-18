@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['locationmanager',['LocationManager',['../class_location_manager.html',1,'']]]
+  ['loadsceneonclick',['LoadSceneOnClick',['../class_load_scene_on_click.html',1,'']]]
 ];

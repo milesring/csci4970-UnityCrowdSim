@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['eventmanager',['EventManager',['../class_event_manager.html',1,'']]]
+  ['generateagents',['GenerateAgents',['../class_generate_agents.html',1,'']]]
 ];

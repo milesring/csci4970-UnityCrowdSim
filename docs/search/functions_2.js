@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['endevent',['endEvent',['../class_navigation.html#aab01c345ce1be5a69f68c29b9b193d70',1,'Navigation']]],
-  ['enqueue',['Enqueue',['../class_queue_logic.html#a4a35cd223087dd06f39066117e985336',1,'QueueLogic']]],
-  ['eventover',['eventOver',['../class_event_manager.html#af169ed0b8ab428c45b2cd61a9117d5f1',1,'EventManager']]]
+  ['getdestination',['GetDestination',['../class_navigation.html#a6fbfaa2b59dc50d145d9fadd39551371',1,'Navigation']]],
+  ['getqueuename',['GetQueueName',['../class_queue_logic.html#a512a155991a866106351157c1038145b',1,'QueueLogic']]]
 ];

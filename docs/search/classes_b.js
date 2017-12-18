@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['queuelogic',['QueueLogic',['../class_queue_logic.html',1,'']]]
+  ['settings',['Settings',['../class_settings.html',1,'']]],
+  ['showslidervalue',['ShowSliderValue',['../class_show_slider_value.html',1,'']]]
 ];

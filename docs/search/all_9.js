@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mouselook',['MouseLook',['../class_mouse_look.html',1,'']]]
+  ['navigation',['Navigation',['../class_navigation.html',1,'']]]
 ];
